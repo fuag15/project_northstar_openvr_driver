@@ -1,0 +1,5 @@
+*.vs/
+*.sln
+*.vc*
+external/LeapSDK/*
+external/Structure/*

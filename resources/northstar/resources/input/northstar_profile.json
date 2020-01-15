@@ -1,0 +1,32 @@
+{
+  "jsonid": "input_profile",
+  "controller_type": "northstar",
+  "input_bindingui_mode" : "controller_handed",
+  "input_source" :
+  {
+    "/input/click" : {
+      "type" : "button",
+      "click" : true,
+      "touch" : true,
+      "binding_image_point" : [ 26, 42 ],
+      "order" : 6
+    },
+    "/pose/raw" : {
+        "type" : "pose",
+        "binding_image_point" : [ 5, 35 ]
+    },
+    "/input/skeleton/left" : {
+        "type" : "skeleton",
+        "skeleton": "/skeleton/hand/left",
+        "side" : "left",
+        "binding_image_point" : [ 5, 35 ]
+
+    },
+    "/input/skeleton/right" : {
+        "type" : "skeleton",
+        "skeleton": "/skeleton/hand/right",
+        "side" : "right",
+        "binding_image_point" : [ 5, 35 ]
+    }
+  }
+}

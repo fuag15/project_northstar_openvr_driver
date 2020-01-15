@@ -1,0 +1,15 @@
+{
+	"alwaysActivate": true,
+	"name" : "northstar",
+	"directory" : "",
+	"resourceOnly" : false,
+	"hmd_presence" :
+	[
+		"*.*"
+	]
+}
+
+
+
+
+
