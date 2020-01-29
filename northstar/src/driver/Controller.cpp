@@ -38,6 +38,12 @@ northstar::driver::CController::CController(
 }
 
 void northstar::driver::CController::LoadConfiguration() {
+    if (x_bUseDebugTrackerConfig == true) {
+        m_sLeapMotionConfiguration.v3dPosition = m_pVectorFactory->V3DFromArray({ 0.0, 0.0, 0.0 });
+        m_sLeapMotionConfiguration.qdOrientation = Quaterniond(1.0, 0.0, 0.0, 0.0);
+        return;
+    }
+
     m_sLeapMotionConfiguration.v3dPosition =
         m_pWorldAdapter->FromUnityPositionToOpenVRPosition(
             m_pVectorFactory->V3DFromArray(
@@ -137,12 +143,14 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
     vr::DriverPose_t sPose;
     auto osLeapHandData = m_pSensorFrameCoordinator->GetLeapHandPose(m_eHand);
     auto osDriverPoseData = m_pSensorFrameCoordinator->GetOpenVRHeadPose();
+
     if (!osLeapHandData || !osDriverPoseData) {
         sPose.poseIsValid = false;
         sPose.result = vr::TrackingResult_Running_OutOfRange;
         return sPose;
     }
 
+    sPose.poseIsValid = true;
     sPose.result = vr::TrackingResult_Running_OK;
     sPose.deviceIsConnected = true;
     sPose.willDriftInYaw = false;
@@ -193,6 +201,29 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
     sPose.qRotation.y = orientation.y();
     sPose.qRotation.z = orientation.z();
 
+    if (x_bUseDebugBasePose) {
+        if (m_eHand == EHand::Left) {
+            sPose.vecPosition[0] = -0.1;
+            sPose.vecPosition[1] = 0.2;
+            sPose.vecPosition[2] = -0.5;
+
+            sPose.qRotation.w = 1.0;
+            sPose.qRotation.x = 0.0;
+            sPose.qRotation.y = 0.0;
+            sPose.qRotation.z = 0.0;
+        }
+        else {
+            sPose.vecPosition[0] = 0.1;
+            sPose.vecPosition[1] = 0.2;
+            sPose.vecPosition[2] = -0.5;
+
+            sPose.qRotation.w = 1.0;
+            sPose.qRotation.x = 0.0;
+            sPose.qRotation.y = 0.0;
+            sPose.qRotation.z = 0.0;
+        }
+    }
+
     // TODO: This needs smoothing
     //Vector3d v4dTranslatedVelocity = m_pWorldAdapter
     //    ->FromLeapMotionVelocityToOpenVRVelocity(
@@ -220,6 +251,7 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
 
     sPose.poseTimeOffset = 0;
     UpdatePendingInputState(
+        sPose,
         m4dLeapConversionMatrix,
         m4dHMDToWorldSpace,
         osLeapHandData.value());
@@ -228,11 +260,13 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
 }
 
 void northstar::driver::CController::UpdatePendingInputState(
+    const vr::DriverPose_t& sPose,
     const northstar::math::types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
     const northstar::math::types::AffineMatrix4d& m4dFromHMDToWorldSpace,
     const LEAP_HAND& sLeapHand) {
     m_sOpenVRState.bClicked = sLeapHand.pinch_strength >= x_dPinchThreshold;
     m_pSkeletalAdapter->FromLeapMotionHandToOVRBonePoseArray(
+        sPose,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand,

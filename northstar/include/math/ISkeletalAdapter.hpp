@@ -11,6 +11,7 @@ namespace northstar {
         class ISkeletalAdapter {
         public:
             virtual void FromLeapMotionHandToOVRBonePoseArray(
+                const vr::DriverPose_t& sPose,
                 const types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
                 const types::AffineMatrix4d& m4dFromHMDToWorldSpace,
                 const LEAP_HAND& sLeapHand, 

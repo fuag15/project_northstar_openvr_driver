@@ -6,6 +6,7 @@
 #include "mock/MockISensorFrameCoordinator.hpp"
 #include "mock/MockIWorldAdapter.hpp"
 #include "mock/MockIVectorFactory.hpp"
+#include "mock/MockIMatrixFactory.hpp"
 #include "mock/MockILogger.hpp"
 #include "mock/MockIVRProperties.hpp"
 #include "mock/MockIVRSettings.hpp"

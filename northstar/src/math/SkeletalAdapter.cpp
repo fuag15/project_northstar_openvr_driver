@@ -3,8 +3,11 @@
 using namespace northstar::driver::types;
 using namespace northstar::math::types;
 
-northstar::math::CSkeletalAdapter::CSkeletalAdapter(std::shared_ptr<IVectorFactory> pVectorFactory) {
+northstar::math::CSkeletalAdapter::CSkeletalAdapter(
+    std::shared_ptr<IVectorFactory> pVectorFactory, 
+    std::shared_ptr<IMatrixFactory> pMatrixFactory) {
     m_pVectorFactory = pVectorFactory;
+    m_pMatrixFactory = pMatrixFactory;
 }
 
 // TODO: figure out correct bone space via testing, cant find docs on it
@@ -47,21 +50,42 @@ and root is considered the end of the wrist. Bones are defined by their "back" e
 
 The space is said to be global leap space but needs to be investigated further as to relative rotations or absolute and
 what OpenVR expects
+
+Investigation: Root is from skeletal root, positions should always have w component of 1, start root at 0,0,0,1...1,0,0,0
+bones need to be in parent relative space using OpenVR / XR / Vulkan coordinate space, make helper function for this
 */
 void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
+    const vr::DriverPose_t& sPose,
     const AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
     const AffineMatrix4d& m4dFromHMDToWorldSpace,
     const LEAP_HAND& sLeapHand, 
     std::array<vr::VRBoneTransform_t, northstar::driver::settings::values::driverConfiguration::k_unBoneCount>& saOpenVRBoneTargets) const {
+    AffineMatrix4d m4dWorldToHandRelativeSpace = m_pMatrixFactory->FromTraslationAndRotation(
+        m_pVectorFactory->V3DFromArray({ sPose.vecPosition[0], sPose.vecPosition[1], sPose.vecPosition[2] }),
+        Quaterniond(sPose.qRotation.w, sPose.qRotation.x, sPose.qRotation.y, sPose.qRotation.z)).inverse();
+
     // Wrist as root
     auto v4dRootPosition = m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetTranslationSensitiveV4DFromLeapVectorPosition(sLeapHand.arm.prev_joint);
     auto qdRootOrientation = (m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetQuaterniondFromLeapQuaternionOrientation(sLeapHand.arm.rotation)).inverse();
+    if (x_dIgnorePalmOffset) {
+        m4dWorldToHandRelativeSpace = m_pMatrixFactory->FromTraslationAndRotation(
+            m_pVectorFactory->V3DXYZFromV4D(v4dRootPosition),
+            Quaterniond(qdRootOrientation.rotation())).inverse();
+    }
+
+    auto v4dPalmRelativeRootPosition = m4dWorldToHandRelativeSpace * v4dRootPosition;
+    auto qdPalmRelativeRootOrientation = m4dWorldToHandRelativeSpace * qdRootOrientation;
     WritePositionAndOrientationIntoVRBonePose(
         saOpenVRBoneTargets[static_cast<int32_t>(EHandeSkeletonBone::Root)],
-        v4dRootPosition,
-        Quaterniond(qdRootOrientation.rotation()));
+        v4dPalmRelativeRootPosition,
+        Quaterniond(qdPalmRelativeRootOrientation.rotation()));
+
+    AffineMatrix4d v4dWorldToRootBoneRelativeSpace = m_pMatrixFactory->FromTraslationAndRotation(
+        m_pVectorFactory->V3DXYZFromV4D(v4dRootPosition),
+        Quaterniond(qdRootOrientation.rotation())).inverse();
 
     WriteConvertedDigitToTargetOVRBoneIndicies(
+        v4dWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand.thumb,
@@ -70,6 +94,7 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         saOpenVRBoneTargets);
 
     WriteConvertedDigitToTargetOVRBoneIndicies(
+        v4dWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand.index,
@@ -78,6 +103,7 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         saOpenVRBoneTargets);
 
     WriteConvertedDigitToTargetOVRBoneIndicies(
+        v4dWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand.middle,
@@ -86,6 +112,7 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         saOpenVRBoneTargets);
 
     WriteConvertedDigitToTargetOVRBoneIndicies(
+        v4dWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand.ring,
@@ -94,6 +121,7 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         saOpenVRBoneTargets);
 
     WriteConvertedDigitToTargetOVRBoneIndicies(
+        v4dWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand.pinky,
@@ -111,48 +139,55 @@ Metacarpal, Poximal, Intermediate, distal phalanges.
 with the fifth being the end of the Digit
 */
 void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndicies(
+    const types::AffineMatrix4d& m4dFromWorldToRootBoneRelativeSpace,
     const types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
     const types::AffineMatrix4d& m4dFromHMDToWorldSpace,
     const LEAP_DIGIT& sLeapDigit,
     const std::array<EHandeSkeletonBone, 5>& aeDestinationIndicies,
     const EHandeSkeletonBone& eAuxBoneIndex,
     std::array<vr::VRBoneTransform_t, northstar::driver::settings::values::driverConfiguration::k_unBoneCount>& saOpenVRBoneTargets) inline const {
-    ConvertAndWriteBoneToOVRBone(
+    AffineMatrix4d m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+        m4dFromWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.metacarpal.prev_joint,
         sLeapDigit.metacarpal.rotation,
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[0])]);
 
-    ConvertAndWriteBoneToOVRBone(
+    m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+        m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.proximal.prev_joint,
         sLeapDigit.proximal.rotation,
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[1])]);
 
-    ConvertAndWriteBoneToOVRBone(
+    m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+        m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.intermediate.prev_joint,
         sLeapDigit.intermediate.rotation,
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[2])]);
 
-    ConvertAndWriteBoneToOVRBone(
+    m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+        m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.distal.prev_joint,
         sLeapDigit.distal.rotation,
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[3])]);
 
-    ConvertAndWriteBoneToOVRBone(
+    m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+        m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.distal.next_joint,
         sLeapDigit.distal.rotation,
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[4])]);
 
-    ConvertAndWriteBoneToOVRBone(
+    ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+        m4dFromWorldToRootBoneRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.distal.prev_joint,
@@ -160,16 +195,26 @@ void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndici
         saOpenVRBoneTargets[static_cast<int32_t>(eAuxBoneIndex)]);
 }
 
-void northstar::math::CSkeletalAdapter::ConvertAndWriteBoneToOVRBone(
+//TODO: This is the wip of the moment
+AffineMatrix4d northstar::math::CSkeletalAdapter::ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
+    const types::AffineMatrix4d& m4dFromWorldSpaceToParentRelativeSpace,
     const types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
     const types::AffineMatrix4d& m4dFromHMDToWorldSpace,
     const LEAP_VECTOR& sLeapPosition,
     const LEAP_QUATERNION& sLeapOrientation,
     vr::VRBoneTransform_t& sVRBoneTransform) inline const {
-    auto v4dRootPosition = m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetTranslationSensitiveV4DFromLeapVectorPosition(sLeapPosition);
-    auto qdRootOrientation = m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetQuaterniondFromLeapQuaternionOrientation(sLeapOrientation);
+    const auto m4dFromLeapSensorToWorldSpace = m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace;
+    auto v4dWorldSpaceRootPosition = m4dFromLeapSensorToWorldSpace * GetTranslationSensitiveV4DFromLeapVectorPosition(sLeapPosition);
+    auto qdWorldSpaceRootOrientation = m4dFromLeapSensorToWorldSpace * m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetQuaterniondFromLeapQuaternionOrientation(sLeapOrientation);
+    auto qdParentSpaceRootOrientation = m4dFromWorldSpaceToParentRelativeSpace * qdWorldSpaceRootOrientation;
     WritePositionAndOrientationIntoVRBonePose(
-        sVRBoneTransform, v4dRootPosition, Quaterniond(qdRootOrientation.rotation()));
+        sVRBoneTransform, 
+        m4dFromWorldSpaceToParentRelativeSpace * v4dWorldSpaceRootPosition, 
+        Quaterniond(qdParentSpaceRootOrientation.rotation()));
+
+    return m_pMatrixFactory->FromTraslationAndRotation(
+        m_pVectorFactory->V3DXYZFromV4D(v4dWorldSpaceRootPosition),
+        Quaterniond(qdWorldSpaceRootOrientation.rotation())).inverse();
 }
 
 Vector4d northstar::math::CSkeletalAdapter::GetTranslationSensitiveV4DFromLeapVectorPosition(const LEAP_VECTOR& sPosition) inline const {
@@ -192,7 +237,7 @@ void northstar::math::CSkeletalAdapter::WritePositionAndOrientationIntoVRBonePos
         static_cast<float>(v4dPosition.x()), 
         static_cast<float>(v4dPosition.y()), 
         static_cast<float>(v4dPosition.z()), 
-        static_cast<float>(v4dPosition.w()) };
+        1.f };
 
     sVRBoneTransform.orientation = { 
         static_cast<float>(qdOrientation.w()), 

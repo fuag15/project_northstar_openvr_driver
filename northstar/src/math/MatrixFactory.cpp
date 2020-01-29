@@ -17,6 +17,12 @@ Translation3d northstar::math::CMatrixFactory::TranslationFromVector3d(const typ
     return Translation3d(v3dTranslation);
 }
 
+AffineMatrix4d northstar::math::CMatrixFactory::FromTraslationAndRotation(const types::Vector3d& v3dTranslation, const types::Quaterniond& qdRotation) const {
+    return AffineMatrix4d::Identity()
+        * Translation3d(v3dTranslation)
+        * qdRotation;
+}
+
 /*
     this is written for OpenGL NDC space
 

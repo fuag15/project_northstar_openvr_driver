@@ -47,6 +47,14 @@ TEST_SUITE("MatrixFactory") {
         }
     }
 
+    //TODO: test
+    SCENARIO("When asked to create a translation rotation") {
+        auto Subject = northstar::math::CMatrixFactory();
+        WHEN("Given a translation and rotation") {
+            THEN("It returns the appropriate matrix") {};
+        }
+    }
+
     //TODO: Test this behaviorally
     SCENARIO("When creating a OpenGL Projection from Frustum extents") {
         auto Subject = northstar::math::CMatrixFactory();
@@ -54,4 +62,5 @@ TEST_SUITE("MatrixFactory") {
             THEN("It creates an appropriate projection") {}
         }
     }
+
 }

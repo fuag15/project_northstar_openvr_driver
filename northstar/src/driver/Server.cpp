@@ -10,7 +10,7 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
     m_pTimeProvider = std::make_shared<northstar::utility::CTimeProvider>();
     m_pSpaceAdapter = std::make_shared<northstar::math::CSpaceAdapter>(m_pVectorFactory);
     m_pGeometry = std::make_shared <northstar::math::CGeometry>(m_pVectorFactory);
-    m_pSkeletalAdapter = std::make_shared<northstar::math::CSkeletalAdapter>(m_pVectorFactory);
+    m_pSkeletalAdapter = std::make_shared<northstar::math::CSkeletalAdapter>(m_pVectorFactory, m_pMatrixFactory);
     m_pLeapMotion = std::make_shared<northstar::driver::CLeapMotion>(m_pLogger);
     m_pSensorFrameCoordinator = std::make_shared<northstar::driver::CSensorFrameCoordinator>(m_pLeapMotion, m_pLogger);
     m_pWorldAdapter = std::make_shared<northstar::math::CWorldAdapter>(
@@ -27,45 +27,44 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
         m_pLogger);
 
     m_pStructureSensor = std::make_shared<northstar::driver::CStructureSensor>(m_pLogger);
-    if (!m_pStructureSensor->SessionStartWasSuccessful())
-        return vr::EVRInitError::VRInitError_Driver_Failed;
-
-    m_pHMD = std::make_unique<northstar::driver::CHMD>(
-        vr::VRSettings(), 
-        vr::VRServerDriverHost(),
-        m_pHostProber,
-        m_pVRProperties,
-        m_pStructureSensor, 
-        m_pWorldAdapter,
-        m_pVectorFactory,
-        m_pOptics,
-        m_pSensorFrameCoordinator,
-        m_pTimeProvider,
-        m_pLogger);
-
-    vr::VRServerDriverHost()->TrackedDeviceAdded(
-        m_pHMD->GetSerialNumber().data(), 
-        vr::TrackedDeviceClass_HMD, 
-        m_pHMD.get());
-
-    for (const auto &eHand : x_aeHands) {
-        m_pControllers.push_back(
-            std::make_unique<CController>(
-                m_pSensorFrameCoordinator,
-                m_pWorldAdapter,
-                m_pVectorFactory,
-                m_pSkeletalAdapter,
-                m_pLogger,
-                m_pVRProperties,
-                vr::VRSettings(),
-                vr::VRServerDriverHost(),
-                vr::VRDriverInput(),
-                eHand));
+    if (m_pStructureSensor->SessionStartWasSuccessful() || x_bControllerDebugMode) {
+        m_pHMD = std::make_unique<northstar::driver::CHMD>(
+            vr::VRSettings(),
+            vr::VRServerDriverHost(),
+            m_pHostProber,
+            m_pVRProperties,
+            m_pStructureSensor,
+            m_pWorldAdapter,
+            m_pVectorFactory,
+            m_pOptics,
+            m_pSensorFrameCoordinator,
+            m_pTimeProvider,
+            m_pLogger);
 
         vr::VRServerDriverHost()->TrackedDeviceAdded(
-            m_pControllers.back()->GetSerialNumber().data(), 
-            vr::TrackedDeviceClass_Controller, 
-            m_pControllers.back().get());
+            m_pHMD->GetSerialNumber().data(),
+            vr::TrackedDeviceClass_HMD,
+            m_pHMD.get());
+
+        for (const auto& eHand : x_aeHands) {
+            m_pControllers.push_back(
+                std::make_unique<CController>(
+                    m_pSensorFrameCoordinator,
+                    m_pWorldAdapter,
+                    m_pVectorFactory,
+                    m_pSkeletalAdapter,
+                    m_pLogger,
+                    m_pVRProperties,
+                    vr::VRSettings(),
+                    vr::VRServerDriverHost(),
+                    vr::VRDriverInput(),
+                    eHand));
+
+            vr::VRServerDriverHost()->TrackedDeviceAdded(
+                m_pControllers.back()->GetSerialNumber().data(),
+                vr::TrackedDeviceClass_Controller,
+                m_pControllers.back().get());
+        }
     }
 
     return vr::EVRInitError::VRInitError_None;

@@ -12,9 +12,10 @@ namespace northstar {
     namespace math {
         class MockISkeletalAdapter : public ISkeletalAdapter {
         public:
-            MAKE_CONST_MOCK4(
+            MAKE_CONST_MOCK5(
                 FromLeapMotionHandToOVRBonePoseArray, 
                 void(
+                    const vr::DriverPose_t&,
                     const types::AffineMatrix4d&,
                     const types::AffineMatrix4d&,
                     const LEAP_HAND&, 

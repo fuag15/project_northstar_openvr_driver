@@ -8,6 +8,7 @@ namespace northstar {
         public:
             virtual types::AffineMatrix4d FromRowMajorArray(const std::array<double, 16>& pdArray) const override final;
             virtual types::Translation3d TranslationFromVector3d(const types::Vector3d& v3dTranslation) const override final;
+            virtual types::AffineMatrix4d FromTraslationAndRotation(const types::Vector3d& v3dTranslation, const types::Quaterniond& qdRotation) const override final;
             virtual types::ProjMatrix4d OpenGLProjectionFromFrustumExtents(
                 const double & dLeft,
                 const double & dRight,

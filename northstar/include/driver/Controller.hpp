@@ -41,6 +41,8 @@ namespace northstar {
             virtual vr::DriverPose_t GetPose() override;
             void RunFrame();
         private:
+            static constexpr bool x_bUseDebugTrackerConfig = true; // TODO: read from config
+            static constexpr bool x_bUseDebugBasePose = true; // TODO: read from config
             static constexpr std::string_view x_svModelNumber = "NorthStarHumanHand";
             static constexpr std::string_view x_svSerialNumberLeft = "LeftHand";
             static constexpr std::string_view x_svSerialNumberRight = "RightHand";
@@ -73,6 +75,7 @@ namespace northstar {
             void SetOpenVRProperties();
             void CreateOpenVRInputComponents();
             void UpdatePendingInputState(
+                const vr::DriverPose_t& sPose,
                 const northstar::math::types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
                 const northstar::math::types::AffineMatrix4d& m4dFromHMDToWorldSpace,
                 const LEAP_HAND& sLeapHand);
