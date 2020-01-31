@@ -101,8 +101,10 @@ namespace northstar {
 
                 namespace paths {
                     static constexpr std::string_view k_svInputProfilePath = "{northstar}/input/northstar_profile.json";
-                    static constexpr std::string_view k_svClickPathLeft = "/input/hand/left/click";
-                    static constexpr std::string_view k_svClickPathRight = "/input/hand/right/click";
+                    static constexpr std::string_view k_svTriggerValuePath = "/input/trigger/value";
+                    static constexpr std::string_view k_svAClickPath = "/input/a/click";
+                    static constexpr std::string_view k_svBClickPath = "/input/b/click";
+                    static constexpr std::string_view k_svSystemClickPath = "/input/system/click";
                     static constexpr std::string_view k_svSkeletalInputPathNameLeft = "/input/skeleton/left";
                     static constexpr std::string_view k_svSkeletalInputPathNameRight = "/input/skeleton/right";
                     static constexpr std::string_view k_svSkeletalInputPathLeft = "/skeleton/hand/left";

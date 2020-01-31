@@ -42,7 +42,9 @@ namespace northstar {
             void RunFrame();
         private:
             static constexpr bool x_bUseDebugTrackerConfig = true; // TODO: read from config
-            static constexpr bool x_bUseDebugBasePose = true; // TODO: read from config
+            static constexpr bool x_bUseDebugBasePose = false; // TODO: read from config
+            static constexpr bool x_bUseRenderModel = true; // TODO: read from config
+            static constexpr double x_dPinchThresholdInMilliMeters = 30; // how close do digits have to be to be considered "pinched"
             static constexpr std::string_view x_svModelNumber = "NorthStarHumanHand";
             static constexpr std::string_view x_svSerialNumberLeft = "LeftHand";
             static constexpr std::string_view x_svSerialNumberRight = "RightHand";
@@ -51,7 +53,6 @@ namespace northstar {
             static constexpr vr::EVRSkeletalTrackingLevel x_eSkeletalTrackingLevel = vr::EVRSkeletalTrackingLevel::VRSkeletalTracking_Full;
             static constexpr vr::VRBoneTransform_t* x_vrGripLimitTransforms = nullptr;
             static constexpr uint32_t x_vrGripLimitTransformCount = 0;
-            static constexpr double x_dPinchThreshold = 0.8; // 0 is not pinched, 1 is fully pinched
             static constexpr std::array<vr::EVRSkeletalMotionRange, 2> x_aeSkeletalMotionRanges = {
                 vr::EVRSkeletalMotionRange::VRSkeletalMotionRange_WithController,
                 vr::EVRSkeletalMotionRange::VRSkeletalMotionRange_WithoutController};
@@ -61,16 +62,24 @@ namespace northstar {
                 northstar::math::types::Quaterniond qdOrientation;
             };
 
+            // TODO: move input state into gesture recognizer
             struct SOpenVRState {
                 vr::TrackedDeviceIndex_t unObjectId;
                 vr::PropertyContainerHandle_t ulPropertyContainer;
-                vr::VRInputComponentHandle_t unClickComponent;
-                bool bClicked;
+                vr::VRInputComponentHandle_t unTriggerValueComponent;
+                vr::VRInputComponentHandle_t unAClickComponent;
+                vr::VRInputComponentHandle_t unBClickComponent;
+                vr::VRInputComponentHandle_t unSystemClickComponent;
                 vr::VRInputComponentHandle_t unSkeletalComponent;
                 std::array<vr::VRBoneTransform_t, northstar::driver::settings::values::driverConfiguration::k_unBoneCount> asOpenVRSkeletalFrameData;
+                float fTriggerValue;
+                bool bMiddleClick;
+                bool bRingClick;
+                bool bPinkyClick;
                 bool bNewSkeletalFrameData;
             };
 
+            void ClearOpenVRState();
             void LoadConfiguration();
             void SetOpenVRProperties();
             void CreateOpenVRInputComponents();
@@ -79,6 +88,11 @@ namespace northstar {
                 const northstar::math::types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
                 const northstar::math::types::AffineMatrix4d& m4dFromHMDToWorldSpace,
                 const LEAP_HAND& sLeapHand);
+
+            bool EvaluateDigitProximityForClick(
+                const northstar::math::types::Vector3d& v3dDigitA, 
+                const northstar::math::types::Vector3d& v3dDigitB, 
+                const double& dPinchThreshold);
 
             void EmitAndClearInputStateEvents();
 

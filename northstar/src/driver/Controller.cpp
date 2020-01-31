@@ -26,15 +26,24 @@ northstar::driver::CController::CController(
     m_pVRSettings = pVRSettings;
     m_pVRServerDriverHost = pVRServerDriverHost;
     m_pVRDriverInput = pVRDriverInput;
+    ClearOpenVRState();
+    LoadConfiguration();
+}
+
+void northstar::driver::CController::ClearOpenVRState() {
     m_sOpenVRState.asOpenVRSkeletalFrameData = { 0 };
     m_sOpenVRState.bNewSkeletalFrameData = false;
 	m_sOpenVRState.unObjectId = vr::k_unTrackedDeviceIndexInvalid;
     m_sOpenVRState.ulPropertyContainer = vr::k_ulInvalidPropertyContainer;
-    m_sOpenVRState.unClickComponent = vr::k_ulInvalidInputComponentHandle;
+    m_sOpenVRState.unTriggerValueComponent = vr::k_ulInvalidInputComponentHandle;
+    m_sOpenVRState.unAClickComponent = vr::k_ulInvalidInputComponentHandle;
+    m_sOpenVRState.unBClickComponent = vr::k_ulInvalidInputComponentHandle;
+    m_sOpenVRState.unSystemClickComponent = vr::k_ulInvalidInputComponentHandle;
     m_sOpenVRState.unSkeletalComponent = vr::k_ulInvalidInputValueHandle;
-    m_sOpenVRState.bClicked = false;
-
-    LoadConfiguration();
+    m_sOpenVRState.bMiddleClick = false;
+    m_sOpenVRState.bRingClick = false;
+    m_sOpenVRState.bPinkyClick = false;
+    m_sOpenVRState.fTriggerValue = 0.0f;
 }
 
 void northstar::driver::CController::LoadConfiguration() {
@@ -79,10 +88,12 @@ void northstar::driver::CController::SetOpenVRProperties() {
         vr::Prop_SerialNumber_String, 
         m_eHand == EHand::Left ? x_svSerialNumberLeft.data() : x_svSerialNumberRight.data() );
 
-    m_pVRProperties->SetStringProperty( 
-        m_sOpenVRState.ulPropertyContainer, 
-        vr::Prop_RenderModelName_String, 
-        m_eHand == EHand::Left ? x_svRenderModelNameLeft.data() : x_svRenderModelNameRight.data() );
+    if (x_bUseRenderModel) {
+        m_pVRProperties->SetStringProperty(
+            m_sOpenVRState.ulPropertyContainer,
+            vr::Prop_RenderModelName_String,
+            m_eHand == EHand::Left ? x_svRenderModelNameLeft.data() : x_svRenderModelNameRight.data());
+    }
 
     m_pVRProperties->SetUint64Property( m_sOpenVRState.ulPropertyContainer, vr::Prop_CurrentUniverseId_Uint64, driverConfiguration::k_uiCurrentUniverseID);
     m_pVRProperties->SetInt32Property( 
@@ -94,10 +105,27 @@ void northstar::driver::CController::SetOpenVRProperties() {
 }
 
 void northstar::driver::CController::CreateOpenVRInputComponents() {
+    m_pVRDriverInput->CreateScalarComponent(
+        m_sOpenVRState.ulPropertyContainer,
+        paths::k_svTriggerValuePath.data(),
+        &m_sOpenVRState.unTriggerValueComponent,
+        vr::EVRScalarType::VRScalarType_Absolute,
+        vr::EVRScalarUnits::VRScalarUnits_NormalizedOneSided);
+
     m_pVRDriverInput->CreateBooleanComponent(
         m_sOpenVRState.ulPropertyContainer,
-        m_eHand == EHand::Left ? paths::k_svClickPathLeft.data() : paths::k_svClickPathRight.data(),
-        &m_sOpenVRState.unClickComponent);
+        paths::k_svAClickPath.data(),
+        &m_sOpenVRState.unAClickComponent);
+
+    m_pVRDriverInput->CreateBooleanComponent(
+        m_sOpenVRState.ulPropertyContainer,
+        paths::k_svBClickPath.data(),
+        &m_sOpenVRState.unBClickComponent);
+
+    m_pVRDriverInput->CreateBooleanComponent(
+        m_sOpenVRState.ulPropertyContainer,
+        paths::k_svSystemClickPath.data(),
+        &m_sOpenVRState.unSystemClickComponent);
 
     m_pVRDriverInput->CreateSkeletonComponent(
         m_sOpenVRState.ulPropertyContainer,
@@ -111,13 +139,7 @@ void northstar::driver::CController::CreateOpenVRInputComponents() {
 }
 
 void northstar::driver::CController::Deactivate() {
-    m_sOpenVRState.unObjectId = vr::k_unTrackedDeviceIndexInvalid;
-    m_sOpenVRState.ulPropertyContainer = vr::k_ulInvalidPropertyContainer;
-    m_sOpenVRState.unClickComponent = vr::k_ulInvalidInputComponentHandle;
-    m_sOpenVRState.unSkeletalComponent = vr::k_ulInvalidInputValueHandle;
-    m_sOpenVRState.asOpenVRSkeletalFrameData = { 0 };
-    m_sOpenVRState.bNewSkeletalFrameData = false;
-    m_sOpenVRState.bClicked = false;
+    ClearOpenVRState();
 }
 
 void* northstar::driver::CController::GetComponent(const char* pchComponentNameAndVersion) {
@@ -259,12 +281,46 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
     return sPose;
 }
 
+//TODO: move this to a gesture recognizer
 void northstar::driver::CController::UpdatePendingInputState(
     const vr::DriverPose_t& sPose,
     const northstar::math::types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
     const northstar::math::types::AffineMatrix4d& m4dFromHMDToWorldSpace,
     const LEAP_HAND& sLeapHand) {
-    m_sOpenVRState.bClicked = sLeapHand.pinch_strength >= x_dPinchThreshold;
+    m_sOpenVRState.fTriggerValue = sLeapHand.pinch_strength;
+    m_sOpenVRState.bMiddleClick = EvaluateDigitProximityForClick(
+        m_pVectorFactory->V3DFromArray(
+            { static_cast<double>(sLeapHand.middle.distal.next_joint.x)
+            , static_cast<double>(sLeapHand.middle.distal.next_joint.y)
+            , static_cast<double>(sLeapHand.middle.distal.next_joint.z) }),
+        m_pVectorFactory->V3DFromArray(
+            { static_cast<double>(sLeapHand.thumb.distal.next_joint.x)
+            , static_cast<double>(sLeapHand.thumb.distal.next_joint.y)
+            , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
+        x_dPinchThresholdInMilliMeters);
+
+    m_sOpenVRState.bRingClick = EvaluateDigitProximityForClick(
+        m_pVectorFactory->V3DFromArray(
+            { static_cast<double>(sLeapHand.ring.distal.next_joint.x)
+            , static_cast<double>(sLeapHand.ring.distal.next_joint.y)
+            , static_cast<double>(sLeapHand.ring.distal.next_joint.z) }),
+        m_pVectorFactory->V3DFromArray(
+            { static_cast<double>(sLeapHand.thumb.distal.next_joint.x)
+            , static_cast<double>(sLeapHand.thumb.distal.next_joint.y)
+            , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
+        x_dPinchThresholdInMilliMeters);
+
+    m_sOpenVRState.bPinkyClick = EvaluateDigitProximityForClick(
+        m_pVectorFactory->V3DFromArray(
+            { static_cast<double>(sLeapHand.pinky.distal.next_joint.x)
+            , static_cast<double>(sLeapHand.pinky.distal.next_joint.y)
+            , static_cast<double>(sLeapHand.pinky.distal.next_joint.z) }),
+        m_pVectorFactory->V3DFromArray(
+            { static_cast<double>(sLeapHand.thumb.distal.next_joint.x)
+            , static_cast<double>(sLeapHand.thumb.distal.next_joint.y)
+            , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
+        x_dPinchThresholdInMilliMeters);
+
     m_pSkeletalAdapter->FromLeapMotionHandToOVRBonePoseArray(
         sPose,
         m4dFromLeapSensorToHMDRelativeSpace,
@@ -275,6 +331,11 @@ void northstar::driver::CController::UpdatePendingInputState(
     m_sOpenVRState.bNewSkeletalFrameData = true;
 }
 
+//TODO: move this to a gesture recognizer
+bool northstar::driver::CController::EvaluateDigitProximityForClick(const Vector3d& v3dDigitA, const Vector3d& v3dDigitB, const double& dPinchThreshold) {
+    return (v3dDigitA - v3dDigitB).norm() <= dPinchThreshold;
+}
+
 void northstar::driver::CController::RunFrame() {
     if (m_sOpenVRState.unObjectId != vr::k_unTrackedDeviceIndexInvalid) {
         m_pVRServerDriverHost->TrackedDevicePoseUpdated(m_sOpenVRState.unObjectId, GetPose(), sizeof(vr::DriverPose_t));
@@ -283,12 +344,26 @@ void northstar::driver::CController::RunFrame() {
 }
 
 void northstar::driver::CController::EmitAndClearInputStateEvents() {
-    m_pVRDriverInput->UpdateBooleanComponent(
-        m_sOpenVRState.unClickComponent, 
-        m_sOpenVRState.bClicked, 
+    m_pVRDriverInput->UpdateScalarComponent(
+        m_sOpenVRState.unTriggerValueComponent, 
+        m_sOpenVRState.fTriggerValue,
         0);
 
-    m_sOpenVRState.bClicked = false;
+    m_pVRDriverInput->UpdateBooleanComponent(
+        m_sOpenVRState.unAClickComponent, 
+        m_sOpenVRState.bMiddleClick,
+        0);
+
+    m_pVRDriverInput->UpdateBooleanComponent(
+        m_sOpenVRState.unBClickComponent, 
+        m_sOpenVRState.bRingClick,
+        0);
+
+    m_pVRDriverInput->UpdateBooleanComponent(
+        m_sOpenVRState.unSystemClickComponent, 
+        m_sOpenVRState.bPinkyClick,
+        0);
+
     if (!m_sOpenVRState.bNewSkeletalFrameData)
         return;
 

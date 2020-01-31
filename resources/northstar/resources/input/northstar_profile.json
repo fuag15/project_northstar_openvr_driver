@@ -1,15 +1,34 @@
 {
   "jsonid": "input_profile",
   "controller_type": "northstar",
+  "legacy_binding": "{northstar}/input/northstar_legacy_bindings.json",
   "input_bindingui_mode" : "controller_handed",
+  "should_show_binding_errors" : true,
   "input_source" :
   {
-    "/input/click" : {
+    "/input/trigger" : {
+        "type" : "trigger",
+        "binding_image_point" : [ 22, 85 ],
+        "value" : true,
+        "order" : 1
+    },
+    "/input/a" : {
       "type" : "button",
       "click" : true,
-      "touch" : true,
       "binding_image_point" : [ 26, 42 ],
-      "order" : 6
+      "order" : 2
+    },
+    "/input/b" : {
+      "type" : "button",
+      "click" : true,
+      "binding_image_point" : [ 26, 42 ],
+      "order" : 3
+    },
+    "/input/system" : {
+      "type" : "button",
+      "click" : true,
+      "binding_image_point" : [ 26, 42 ],
+      "order" : 4
     },
     "/pose/raw" : {
         "type" : "pose",
