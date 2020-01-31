@@ -6,8 +6,7 @@ this is a work in progress [more info](TODO.md)
 - Head Tracking
 - Hand Tracking
 - View Projection
-- Basic input event
+- Basic input
 
 ### Notable unfinished parts
 - Skeletal Tracking is untested
-- The only input gesture is an unmapped click
