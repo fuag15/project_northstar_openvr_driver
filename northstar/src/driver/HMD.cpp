@@ -39,9 +39,10 @@ void northstar::driver::CHMD::LoadConfiguration() {
     m_sConfiguration.sDisplayConfiguration.dFrequency = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svFrequency.data());
     m_sConfiguration.sDisplayConfiguration.dPhotonLatency = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svPhotonLatency.data());
     if (x_bUseFakeScreenConfig) {
+        //TODO: Put these in constants
         m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin << 100, 100;
-        m_sConfiguration.sDisplayConfiguration.v2iWindowDimensions << 800, 800;
-        m_sConfiguration.sDisplayConfiguration.v2iEyeRenderAreaDimensions << 800, 800;
+        m_sConfiguration.sDisplayConfiguration.v2iWindowDimensions << 1000, 1000;
+        m_sConfiguration.sDisplayConfiguration.v2iEyeRenderAreaDimensions << 1000, 1000;
     } else {
         m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin <<
             m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svOriginX.data()),

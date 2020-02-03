@@ -299,16 +299,17 @@ void northstar::driver::CController::UpdatePendingInputState(
             , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
         x_dPinchThresholdInMilliMeters);
 
-    m_sOpenVRState.bRingClick = EvaluateDigitProximityForClick(
-        m_pVectorFactory->V3DFromArray(
-            { static_cast<double>(sLeapHand.ring.distal.next_joint.x)
-            , static_cast<double>(sLeapHand.ring.distal.next_joint.y)
-            , static_cast<double>(sLeapHand.ring.distal.next_joint.z) }),
-        m_pVectorFactory->V3DFromArray(
-            { static_cast<double>(sLeapHand.thumb.distal.next_joint.x)
-            , static_cast<double>(sLeapHand.thumb.distal.next_joint.y)
-            , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
-        x_dPinchThresholdInMilliMeters);
+    m_sOpenVRState.bRingClick = false;
+    //m_sOpenVRState.bRingClick = EvaluateDigitProximityForClick(
+    //    m_pVectorFactory->V3DFromArray(
+    //        { static_cast<double>(sLeapHand.ring.distal.next_joint.x)
+    //        , static_cast<double>(sLeapHand.ring.distal.next_joint.y)
+    //        , static_cast<double>(sLeapHand.ring.distal.next_joint.z) }),
+    //    m_pVectorFactory->V3DFromArray(
+    //        { static_cast<double>(sLeapHand.thumb.distal.next_joint.x)
+    //        , static_cast<double>(sLeapHand.thumb.distal.next_joint.y)
+    //        , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
+    //    x_dPinchThresholdInMilliMeters);
 
     m_sOpenVRState.bPinkyClick = EvaluateDigitProximityForClick(
         m_pVectorFactory->V3DFromArray(
@@ -349,14 +350,14 @@ void northstar::driver::CController::EmitAndClearInputStateEvents() {
         m_sOpenVRState.fTriggerValue,
         0);
 
-    m_pVRDriverInput->UpdateBooleanComponent(
-        m_sOpenVRState.unAClickComponent, 
-        m_sOpenVRState.bMiddleClick,
-        0);
+    //m_pVRDriverInput->UpdateBooleanComponent(
+    //    m_sOpenVRState.unAClickComponent, 
+    //    m_sOpenVRState.bMiddleClick,
+    //    0);
 
     m_pVRDriverInput->UpdateBooleanComponent(
         m_sOpenVRState.unBClickComponent, 
-        m_sOpenVRState.bRingClick,
+        m_sOpenVRState.bMiddleClick,
         0);
 
     m_pVRDriverInput->UpdateBooleanComponent(

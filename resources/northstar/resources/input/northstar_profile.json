@@ -1,14 +1,23 @@
 {
   "jsonid": "input_profile",
   "controller_type": "northstar",
+  "device_class": "TrackedDeviceClass_Controller",
   "legacy_binding": "{northstar}/input/northstar_legacy_bindings.json",
   "input_bindingui_mode" : "controller_handed",
   "should_show_binding_errors" : true,
+  "input_bindingui_left" :
+  {
+    "image": "{northstar}/icons/humanhand_left.svg"
+  },
+  "input_bindingui_right" :
+  {
+    "image": "{northstar}/icons/humanhand_right.svg"
+  },
   "input_source" :
   {
     "/input/trigger" : {
         "type" : "trigger",
-        "binding_image_point" : [ 22, 85 ],
+        "binding_image_point" : [ 11, 60 ],
         "value" : true,
         "order" : 1
     },
@@ -21,25 +30,36 @@
     "/input/b" : {
       "type" : "button",
       "click" : true,
-      "binding_image_point" : [ 26, 42 ],
+      "binding_image_point" : [ 18, 37 ],
       "order" : 3
     },
     "/input/system" : {
       "type" : "button",
       "click" : true,
-      "binding_image_point" : [ 26, 42 ],
+      "binding_image_point" : [ 35, 45 ],
       "order" : 4
     },
     "/pose/raw" : {
         "type" : "pose",
         "binding_image_point" : [ 5, 35 ]
     },
+    "/pose/base" : {
+      "type" : "pose",
+      "binding_image_point" : [ 65, 136 ]
+    },
+    "/pose/handgrip" : {
+      "type" : "pose",
+      "binding_image_point" : [ 56, 95 ]
+    },
+    "/pose/tip" : {
+      "type" : "pose",
+      "binding_image_point" : [ 5, 35 ]
+    },
     "/input/skeleton/left" : {
         "type" : "skeleton",
         "skeleton": "/skeleton/hand/left",
         "side" : "left",
         "binding_image_point" : [ 5, 35 ]
-
     },
     "/input/skeleton/right" : {
         "type" : "skeleton",

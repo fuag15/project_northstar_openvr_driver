@@ -1,0 +1,23 @@
+<svg width="168" height="250" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+
+ <g>
+  <title>background</title>
+  <rect fill="#000000" id="canvas_background" height="252" width="170" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <style type="text/css">.st0{fill:none;stroke:#FEFEFE;stroke-width:0.4252;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}</style>
+  <g transform="matrix(0.35461, 0, 0, 0.35461, 0, 0)" id="svg_395">
+   <path stroke="#000" fill="#fff" id="svg_1170" d="m362.5,166" class="st1"/>
+  </g>
+  <g transform="matrix(0.35461, 0, 0, 0.35461, 0, 0)" id="svg_393">
+   <path stroke="#000" fill="#fff" id="svg_1172" d="m333,209.699997" class="st1"/>
+  </g>
+  <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_1177" y="65.5" x="19.5" stroke-width="0" stroke="#000000" fill="#ffffff">TODO</text>
+ </g>
+</svg>
