@@ -40,6 +40,7 @@ void northstar::driver::CController::ClearOpenVRState() {
     m_sOpenVRState.unBClickComponent = vr::k_ulInvalidInputComponentHandle;
     m_sOpenVRState.unSystemClickComponent = vr::k_ulInvalidInputComponentHandle;
     m_sOpenVRState.unSkeletalComponent = vr::k_ulInvalidInputValueHandle;
+    m_sOpenVRState.bPointerClick = false;
     m_sOpenVRState.bMiddleClick = false;
     m_sOpenVRState.bRingClick = false;
     m_sOpenVRState.bPinkyClick = false;
@@ -288,6 +289,18 @@ void northstar::driver::CController::UpdatePendingInputState(
     const northstar::math::types::AffineMatrix4d& m4dFromHMDToWorldSpace,
     const LEAP_HAND& sLeapHand) {
     m_sOpenVRState.fTriggerValue = sLeapHand.pinch_strength;
+    m_sOpenVRState.bPointerClick = false;
+    //m_sOpenVRState.bPointerClick = EvaluateDigitProximityForClick(
+    //    m_pVectorFactory->V3DFromArray(
+    //        { static_cast<double>(sLeapHand.index.distal.next_joint.x)
+    //        , static_cast<double>(sLeapHand.index.distal.next_joint.y)
+    //        , static_cast<double>(sLeapHand.index.distal.next_joint.z) }),
+    //    m_pVectorFactory->V3DFromArray(
+    //        { static_cast<double>(sLeapHand.thumb.distal.next_joint.x)
+    //        , static_cast<double>(sLeapHand.thumb.distal.next_joint.y)
+    //        , static_cast<double>(sLeapHand.thumb.distal.next_joint.z) }),
+    //    x_dPinchThresholdInMilliMeters);
+
     m_sOpenVRState.bMiddleClick = EvaluateDigitProximityForClick(
         m_pVectorFactory->V3DFromArray(
             { static_cast<double>(sLeapHand.middle.distal.next_joint.x)
@@ -350,6 +363,7 @@ void northstar::driver::CController::EmitAndClearInputStateEvents() {
         m_sOpenVRState.fTriggerValue,
         0);
 
+    // TODO: Figure out better bindings
     //m_pVRDriverInput->UpdateBooleanComponent(
     //    m_sOpenVRState.unAClickComponent, 
     //    m_sOpenVRState.bMiddleClick,

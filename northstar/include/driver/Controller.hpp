@@ -63,6 +63,7 @@ namespace northstar {
             };
 
             // TODO: move input state into gesture recognizer
+            // TODO: clean up input (better as pull triggers than buttons)
             struct SOpenVRState {
                 vr::TrackedDeviceIndex_t unObjectId;
                 vr::PropertyContainerHandle_t ulPropertyContainer;
@@ -73,6 +74,7 @@ namespace northstar {
                 vr::VRInputComponentHandle_t unSkeletalComponent;
                 std::array<vr::VRBoneTransform_t, northstar::driver::settings::values::driverConfiguration::k_unBoneCount> asOpenVRSkeletalFrameData;
                 float fTriggerValue;
+                bool bPointerClick;
                 bool bMiddleClick;
                 bool bRingClick;
                 bool bPinkyClick;
