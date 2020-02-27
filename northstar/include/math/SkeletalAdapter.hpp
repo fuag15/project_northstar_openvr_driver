@@ -25,7 +25,7 @@ namespace northstar {
                 const LEAP_HAND& sLeapHand, 
                 std::array<vr::VRBoneTransform_t, northstar::driver::settings::values::driverConfiguration::k_unBoneCount>& saOpenVRBoneTargets) const override final;
         private:
-            static constexpr bool x_dIgnorePalmOffset = true; // TODO: read from config
+            static constexpr bool x_dIgnorePalmOffset = false; // TODO: read from config
             void WriteConvertedDigitToTargetOVRBoneIndicies(
                 const types::AffineMatrix4d& m4dFromWorldToRootBoneRelativeSpace,
                 const types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
