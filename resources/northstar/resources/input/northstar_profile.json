@@ -1,9 +1,10 @@
 {
   "jsonid": "input_profile",
-  "controller_type": "northstar",
+  "controller_type": "northstar_hand",
   "device_class": "TrackedDeviceClass_Controller",
   "legacy_binding": "{northstar}/input/northstar_legacy_bindings.json",
   "input_bindingui_mode" : "controller_handed",
+  "should_show_binding_errors" : true,
   "input_bindingui_left" :
   {
     "image": "{northstar}/icons/humanhand_left.svg"
@@ -15,10 +16,10 @@
   "input_source" :
   {
     "/input/trigger" : {
-        "type" : "trigger",
-        "binding_image_point" : [ 11, 60 ],
-        "value" : true,
-        "order" : 1
+      "type" : "trigger",
+      "binding_image_point" : [ 11, 60 ],
+      "value" : true,
+      "order" : 1
     },
     "/input/a" : {
       "type" : "button",
@@ -38,9 +39,58 @@
       "binding_image_point" : [ 35, 45 ],
       "order" : 4
     },
+    "/input/grip" : {
+        "type" : "trigger",
+        "binding_image_point" : [ 27, 37],
+        "value" : true,
+        "order" : 5
+    },
+    "/input/pinch" : {
+      "type" : "pinch",
+      "value_source" : "/input/trigger",
+      "capsense_source" : "/input/finger/index",
+      "binding_image_point" : [ 27, 37 ],
+      "order" : 6
+    },
+    "/input/finger/index" : {
+      "type" : "trigger",
+	    "visibility" : "InputValueVisibility_AvailableButHidden",
+      "binding_image_point" : [ 56, 86 ],
+      "order" : 7
+    },
+    "/input/finger/middle" : {
+        "type" : "trigger",
+	      "visibility" : "InputValueVisibility_AvailableButHidden",
+        "binding_image_point" : [ 56, 86 ],
+        "order" : 8
+    },
+    "/input/finger/ring" : {
+        "type" : "trigger",
+	      "visibility" : "InputValueVisibility_AvailableButHidden",
+        "binding_image_point" : [ 56, 86 ],
+        "order" : 9
+    },
+    "/input/finger/pinky" : {
+        "type" : "trigger",
+	      "visibility" : "InputValueVisibility_AvailableButHidden",
+        "binding_image_point" : [ 56, 86 ],
+        "order" : 10
+    },
     "/pose/raw" : {
         "type" : "pose",
         "binding_image_point" : [ 5, 35 ]
+    },
+    "/pose/base" : {
+      "type" : "pose",
+      "binding_image_point" : [ 65, 136 ]
+    },
+    "/pose/handgrip" : {
+      "type" : "pose",
+      "binding_image_point" : [ 56, 95 ]
+    },
+    "/pose/tip" : {
+      "type" : "pose",
+      "binding_image_point" : [ 5, 35 ]
     },
     "/input/skeleton/left" : {
         "type" : "skeleton",
@@ -54,5 +104,19 @@
         "side" : "right",
         "binding_image_point" : [ 5, 35 ]
     }
-  }
+  },
+  "default_bindings": [ 
+    {
+      "app_key": "openvr.component.vrcompositor",
+      "binding_url": "steamvr_compositor_bindings_northstar.json"
+    },
+    {
+      "app_key": "openvr.tool.steamvr_environments",
+      "binding_url": "steamvr_home_bindings_northstar.json"
+    },
+    {
+      "app_key": "steam.app.450390",
+      "binding_url": "steamvr_lab_bindings_northstar.json"
+    }
+  ]
 }

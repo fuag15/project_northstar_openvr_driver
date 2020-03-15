@@ -125,7 +125,7 @@
           ]
        }
     },
-    "controller_type" : "northstar",
+    "controller_type" : "northstar_hand",
     "description" : "Default binding values for legacy apps using the Northstar Controller",
     "name" : "Northstar Legacy Defaults"
  }

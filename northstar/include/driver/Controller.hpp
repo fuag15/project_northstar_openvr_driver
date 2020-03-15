@@ -42,12 +42,13 @@ namespace northstar {
             void RunFrame();
         private:
             static constexpr bool x_bUseDebugTrackerConfig = true; // TODO: read from config
-            static constexpr bool x_bUseDebugBasePose = false; // TODO: read from config
+            static constexpr bool x_bUseDebugBasePose = true; // TODO: read from config
             static constexpr bool x_bUseRenderModel = true; // TODO: read from config
             static constexpr double x_dPinchThresholdInMilliMeters = 30; // how close do digits have to be to be considered "pinched"
             static constexpr std::string_view x_svModelNumber = "NorthStarHumanHand";
             static constexpr std::string_view x_svSerialNumberLeft = "LeftHand";
             static constexpr std::string_view x_svSerialNumberRight = "RightHand";
+            static constexpr std::string_view x_svControllerType = "northstar_hand";
             static constexpr std::string_view x_svRenderModelNameLeft = "vr_controller_vive_1_5";
             static constexpr std::string_view x_svRenderModelNameRight = "vr_controller_vive_1_5";
             static constexpr vr::EVRSkeletalTrackingLevel x_eSkeletalTrackingLevel = vr::EVRSkeletalTrackingLevel::VRSkeletalTracking_Full;
@@ -79,6 +80,7 @@ namespace northstar {
                 bool bRingClick;
                 bool bPinkyClick;
                 bool bNewSkeletalFrameData;
+                bool bSkeletalFrameDataInitialPoseSubmitted;
             };
 
             void ClearOpenVRState();

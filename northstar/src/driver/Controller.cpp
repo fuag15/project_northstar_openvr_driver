@@ -33,6 +33,7 @@ northstar::driver::CController::CController(
 void northstar::driver::CController::ClearOpenVRState() {
     m_sOpenVRState.asOpenVRSkeletalFrameData = { 0 };
     m_sOpenVRState.bNewSkeletalFrameData = false;
+    m_sOpenVRState.bSkeletalFrameDataInitialPoseSubmitted = false;
 	m_sOpenVRState.unObjectId = vr::k_unTrackedDeviceIndexInvalid;
     m_sOpenVRState.ulPropertyContainer = vr::k_ulInvalidPropertyContainer;
     m_sOpenVRState.unTriggerValueComponent = vr::k_ulInvalidInputComponentHandle;
@@ -103,6 +104,7 @@ void northstar::driver::CController::SetOpenVRProperties() {
         m_eHand == EHand::Left ? vr::TrackedControllerRole_LeftHand : vr::TrackedControllerRole_RightHand);
 
     m_pVRProperties->SetStringProperty( m_sOpenVRState.ulPropertyContainer, vr::Prop_InputProfilePath_String, paths::k_svInputProfilePath.data());
+    m_pVRProperties->SetStringProperty( m_sOpenVRState.ulPropertyContainer, vr::Prop_ControllerType_String, x_svControllerType.data() );
 }
 
 void northstar::driver::CController::CreateOpenVRInputComponents() {
@@ -128,7 +130,7 @@ void northstar::driver::CController::CreateOpenVRInputComponents() {
         paths::k_svSystemClickPath.data(),
         &m_sOpenVRState.unSystemClickComponent);
 
-    m_pVRDriverInput->CreateSkeletonComponent(
+    const auto eResult = m_pVRDriverInput->CreateSkeletonComponent(
         m_sOpenVRState.ulPropertyContainer,
         m_eHand == EHand::Left ? paths::k_svSkeletalInputPathNameLeft.data() : paths::k_svSkeletalInputPathNameRight.data(),
         m_eHand == EHand::Left ? paths::k_svSkeletalInputPathLeft.data() : paths::k_svSkeletalInputPathRight.data(),
@@ -137,6 +139,10 @@ void northstar::driver::CController::CreateOpenVRInputComponents() {
         x_vrGripLimitTransforms,
         x_vrGripLimitTransformCount,
         &m_sOpenVRState.unSkeletalComponent);
+
+    if (eResult != vr::EVRInputError::VRInputError_None) {
+        m_pLogger->Log("Error creating skeletal component!");
+    }
 }
 
 void northstar::driver::CController::Deactivate() {
@@ -166,6 +172,7 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
     vr::DriverPose_t sPose;
     auto osLeapHandData = m_pSensorFrameCoordinator->GetLeapHandPose(m_eHand);
     auto osDriverPoseData = m_pSensorFrameCoordinator->GetOpenVRHeadPose();
+    sPose.deviceIsConnected = true;
 
     if (!osLeapHandData || !osDriverPoseData) {
         sPose.poseIsValid = false;
@@ -175,7 +182,6 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
 
     sPose.poseIsValid = true;
     sPose.result = vr::TrackingResult_Running_OK;
-    sPose.deviceIsConnected = true;
     sPose.willDriftInYaw = false;
     sPose.shouldApplyHeadModel = false;
 
@@ -227,8 +233,8 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
     if (x_bUseDebugBasePose) {
         if (m_eHand == EHand::Left) {
             sPose.vecPosition[0] = -0.1;
-            sPose.vecPosition[1] = 0.2;
-            sPose.vecPosition[2] = -0.5;
+            sPose.vecPosition[1] = -0.2;
+            sPose.vecPosition[2] = -0.2;
 
             sPose.qRotation.w = 1.0;
             sPose.qRotation.x = 0.0;
@@ -237,8 +243,8 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
         }
         else {
             sPose.vecPosition[0] = 0.1;
-            sPose.vecPosition[1] = 0.2;
-            sPose.vecPosition[2] = -0.5;
+            sPose.vecPosition[1] = -0.2;
+            sPose.vecPosition[2] = -0.2;
 
             sPose.qRotation.w = 1.0;
             sPose.qRotation.x = 0.0;
@@ -379,16 +385,21 @@ void northstar::driver::CController::EmitAndClearInputStateEvents() {
         m_sOpenVRState.bPinkyClick,
         0);
 
-    if (!m_sOpenVRState.bNewSkeletalFrameData)
+    if (!m_sOpenVRState.bNewSkeletalFrameData && m_sOpenVRState.bSkeletalFrameDataInitialPoseSubmitted)
         return;
 
     for (const auto& eSkeletalMotionRange : x_aeSkeletalMotionRanges) {
-        m_pVRDriverInput->UpdateSkeletonComponent(
+        auto eResult = m_pVRDriverInput->UpdateSkeletonComponent(
             m_sOpenVRState.unSkeletalComponent,
             eSkeletalMotionRange,
             m_sOpenVRState.asOpenVRSkeletalFrameData.data(),
             static_cast<uint32_t>(m_sOpenVRState.asOpenVRSkeletalFrameData.size()));
+
+        if (eResult != vr::EVRInputError::VRInputError_None) {
+            m_pLogger->Log("Error updating skeletal input component state!");
+        }
     }
 
+    m_sOpenVRState.bSkeletalFrameDataInitialPoseSubmitted = true;
     m_sOpenVRState.bNewSkeletalFrameData = false;
 }

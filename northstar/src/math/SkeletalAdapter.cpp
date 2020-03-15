@@ -155,7 +155,7 @@ void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndici
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[0])]);
 
     m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
-        m4dCurrentWorldToParentRelativeSpace,
+        m4dFromWorldToRootBoneRelativeSpace,// m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.proximal.prev_joint,
@@ -163,7 +163,7 @@ void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndici
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[1])]);
 
     m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
-        m4dCurrentWorldToParentRelativeSpace,
+        m4dFromWorldToRootBoneRelativeSpace,// m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.intermediate.prev_joint,
@@ -171,7 +171,7 @@ void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndici
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[2])]);
 
     m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
-        m4dCurrentWorldToParentRelativeSpace,
+        m4dFromWorldToRootBoneRelativeSpace,// m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.distal.prev_joint,
@@ -179,7 +179,7 @@ void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndici
         saOpenVRBoneTargets[static_cast<int32_t>(aeDestinationIndicies[3])]);
 
     m4dCurrentWorldToParentRelativeSpace = ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
-        m4dCurrentWorldToParentRelativeSpace,
+        m4dFromWorldToRootBoneRelativeSpace,// m4dCurrentWorldToParentRelativeSpace,
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapDigit.distal.next_joint,

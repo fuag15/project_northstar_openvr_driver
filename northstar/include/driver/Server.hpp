@@ -35,7 +35,7 @@ namespace northstar {
 
         private:
             static constexpr bool x_bControllerDebugMode = true; // TODO: read this from config
-            static constexpr bool x_bShouldBlockStandbyMode = false;
+            static constexpr bool x_bShouldBlockStandbyMode = true;
             static constexpr std::array<northstar::driver::types::EHand, 2> x_aeHands = { northstar::driver::types::EHand::Left, northstar::driver::types::EHand::Right };
 
             std::shared_ptr<northstar::math::CVectorFactory> m_pVectorFactory;
