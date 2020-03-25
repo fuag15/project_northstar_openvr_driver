@@ -6,7 +6,9 @@ this is a work in progress [more info](TODO.md)
 - Head Tracking
 - Hand Tracking
 - View Projection
+- Skeletal tracking
 - Basic input
 
 ### Notable unfinished parts
-- Skeletal Tracking is untested
+- T265 Sensor integration
+- Gesture recognizer

@@ -13,9 +13,7 @@ northstar::math::CSkeletalAdapter::CSkeletalAdapter(
     m_pLogger = pLogger;
 }
 
-// TODO: figure out correct bone space via testing, cant find docs on it
-// TODO: root transform?
-// TODO: clean up
+// TODO: Clean up
 /*
 Leap provides a palm centric approach to bones with a front and back
 
@@ -77,12 +75,10 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         qdRootOrientation);
 
     AffineMatrix4d m4dWorldToRootBoneRelativeSpace = m4dWorldToHandRelativeSpace;
-
-    // Wrist, invert the orientation from leap as leap sees this as oriented away from the palm and ovr sees this as oriented away from the elbow
     auto v4dWristWorldPosition = m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetTranslationSensitiveV4DFromLeapVectorPosition(sLeapHand.arm.next_joint);
     auto qdWristWorldOrientation = m4dFromHMDToWorldSpace * m4dFromLeapSensorToHMDRelativeSpace * GetQuaterniondFromLeapQuaternionOrientation(sLeapHand.palm.orientation);
-    
-    // TODO: CLean up
+
+    // TODO: CLean up / document
     if (eHand == EHand::Right) {
         auto wristYAxis = qdWristWorldOrientation.rotation() * Vector3d::UnitY();
         auto rotation = Quaterniond(AngleAxisd(M_PI, wristYAxis));
@@ -104,11 +100,11 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         v4dRootRelativeWristPosition,
         Quaterniond(qdRootRelativeWristOrientation.rotation()));
 
-    // Get world to wrist relative space now
     AffineMatrix4d m4dWorldToWristBoneRelativeSpace = m_pMatrixFactory->FromTraslationAndRotation(
         m_pVectorFactory->V3DXYZFromV4D(v4dWristWorldPosition),
         Quaterniond(qdWristWorldOrientation.rotation())).inverse();
 
+    // TODO: Clean up - This could be more data driven using .digits member of leaphand and data constants
     WriteConvertedDigitToTargetOVRBoneIndicies(
         m4dWorldToRootBoneRelativeSpace,
         m4dWorldToWristBoneRelativeSpace,
@@ -170,7 +166,7 @@ void northstar::math::CSkeletalAdapter::FromLeapMotionHandToOVRBonePoseArray(
         eHand);
 }
 
-// TODO: Clean this up
+// TODO: Clean up
 /*
 it is assumed that the index order is in the order of leap data
 
@@ -257,6 +253,7 @@ void northstar::math::CSkeletalAdapter::WriteConvertedDigitToTargetOVRBoneIndici
         eHand);
 }
 
+// TODO: Clean up / Document
 AffineMatrix4d northstar::math::CSkeletalAdapter::ConvertAndWriteBoneToOVRBoneReturningNewWorldToRelativeTransform(
     const types::AffineMatrix4d& m4dFromWorldSpaceToParentRelativeSpace,
     const types::AffineMatrix4d& m4dFromLeapSensorToHMDRelativeSpace,
@@ -267,7 +264,6 @@ AffineMatrix4d northstar::math::CSkeletalAdapter::ConvertAndWriteBoneToOVRBoneRe
     const EBoneType& eBoneType,
     const ESegmentClassification& eSegmentClassification,
     const EHand& eHand) inline const {
-    // thumbs ignore metacarpal
     if (eBoneType == EBoneType::Thumb 
         && eSegmentClassification == ESegmentClassification::Metacarpal)
         return m4dFromWorldSpaceToParentRelativeSpace;
@@ -293,7 +289,7 @@ AffineMatrix4d northstar::math::CSkeletalAdapter::ConvertAndWriteBoneToOVRBoneRe
         qdBoneSpaceRootOrientation).inverse();
 }
 
-// TODO: Clean up
+// TODO: Clean up / Document
 Quaterniond northstar::math::CSkeletalAdapter::ConvertLeapDigitOrientationToOpenVRDigitOrientation(
     const Quaterniond& qdLeapDigitOrientation, 
     const EBoneType& eBoneType,

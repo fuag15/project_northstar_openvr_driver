@@ -23,7 +23,6 @@
 
 # Leap controller Polish
 - better model
-- test bone positions
 - vel is choppy
 - standby mode
 - ensure server stops tracking when driver stops
