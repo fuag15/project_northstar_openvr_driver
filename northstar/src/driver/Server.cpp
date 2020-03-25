@@ -10,7 +10,7 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
     m_pTimeProvider = std::make_shared<northstar::utility::CTimeProvider>();
     m_pSpaceAdapter = std::make_shared<northstar::math::CSpaceAdapter>(m_pVectorFactory);
     m_pGeometry = std::make_shared <northstar::math::CGeometry>(m_pVectorFactory);
-    m_pSkeletalAdapter = std::make_shared<northstar::math::CSkeletalAdapter>(m_pVectorFactory, m_pMatrixFactory);
+    m_pSkeletalAdapter = std::make_shared<northstar::math::CSkeletalAdapter>(m_pVectorFactory, m_pMatrixFactory, m_pLogger);
     m_pLeapMotion = std::make_shared<northstar::driver::CLeapMotion>(m_pLogger);
     m_pSensorFrameCoordinator = std::make_shared<northstar::driver::CSensorFrameCoordinator>(m_pLeapMotion, m_pLogger);
     m_pWorldAdapter = std::make_shared<northstar::math::CWorldAdapter>(

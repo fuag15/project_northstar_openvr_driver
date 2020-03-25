@@ -232,9 +232,9 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
 
     if (x_bUseDebugBasePose) {
         if (m_eHand == EHand::Left) {
-            sPose.vecPosition[0] = -0.1;
+            sPose.vecPosition[0] = -0.3;
             sPose.vecPosition[1] = -0.2;
-            sPose.vecPosition[2] = -0.2;
+            sPose.vecPosition[2] = -0.4;
 
             sPose.qRotation.w = 1.0;
             sPose.qRotation.x = 0.0;
@@ -242,9 +242,9 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
             sPose.qRotation.z = 0.0;
         }
         else {
-            sPose.vecPosition[0] = 0.1;
+            sPose.vecPosition[0] = 0.3;
             sPose.vecPosition[1] = -0.2;
-            sPose.vecPosition[2] = -0.2;
+            sPose.vecPosition[2] = -0.4;
 
             sPose.qRotation.w = 1.0;
             sPose.qRotation.x = 0.0;
@@ -346,7 +346,8 @@ void northstar::driver::CController::UpdatePendingInputState(
         m4dFromLeapSensorToHMDRelativeSpace,
         m4dFromHMDToWorldSpace,
         sLeapHand,
-        m_sOpenVRState.asOpenVRSkeletalFrameData);
+        m_sOpenVRState.asOpenVRSkeletalFrameData,
+        m_eHand);
 
     m_sOpenVRState.bNewSkeletalFrameData = true;
 }
