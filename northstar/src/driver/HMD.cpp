@@ -9,21 +9,17 @@ northstar::driver::CHMD::CHMD(
     vr::IVRServerDriverHost* pVRServerDriverHost,
     std::shared_ptr<northstar::utility::IHostProber> pHostProber,
     std::shared_ptr<northstar::openvr::IVRProperties> pVRProperties,
-    std::shared_ptr<northstar::driver::IStructureSensor> pStructureSensor, 
-    std::shared_ptr<northstar::math::IWorldAdapter> pWorldAdapter,
+    std::shared_ptr<northstar::driver::IEnvironmentSensor> pEnvironmentSensor, 
     std::shared_ptr<northstar::math::IVectorFactory> pVectorFactory,
     std::shared_ptr<northstar::driver::IOptics> pOptics,
     std::shared_ptr<northstar::driver::ISensorFrameCoordinator> pSensorFrameCoordinator,
-    std::shared_ptr<northstar::utility::ITimeProvider> pTimeProvider,
     std::shared_ptr<northstar::utility::ILogger> pLogger) {
     m_pVRSettings = pVRSettings;
     m_pVRServerDriverHost = pVRServerDriverHost;
     m_pHostProber = pHostProber;
     m_pVRProperties = pVRProperties;
     m_pLogger = pLogger;
-    m_pStructureSensor = pStructureSensor;
-    m_pTimeProvider = pTimeProvider;
-    m_pWorldAdapter = pWorldAdapter;
+    m_pEnvironmentSensor = pEnvironmentSensor;
     m_pVectorFactory = pVectorFactory;
     m_pOptics = pOptics;
     m_pSensorFrameCoordinator = pSensorFrameCoordinator;
@@ -126,9 +122,9 @@ bool northstar::driver::CHMD::IsDisplayRealDisplay() {
 }
 
 
+// TODO: clean up sensor driver interaction
 vr::DriverPose_t northstar::driver::CHMD::GetPose() {
-    static ST::XRPose RawPose;
-    static northstar::driver::IStructureSensor::EPoseRetrievalError eError;
+    static northstar::driver::IEnvironmentSensor::EPoseRetrievalError eError;
 
     if (x_bUseFakeTracking) {
         vr::DriverPose_t sFakePose = { 0 };
@@ -143,7 +139,7 @@ vr::DriverPose_t northstar::driver::CHMD::GetPose() {
     }
 
     vr::DriverPose_t Pose;
-    Pose.poseIsValid = m_pStructureSensor->GetPose(RawPose, eError);
+    Pose.poseIsValid = m_pEnvironmentSensor->GetPose(Pose, eError);
     if (!Pose.poseIsValid) {
         Pose.result = vr::TrackingResult_Uninitialized;
         Pose.deviceIsConnected = false;
@@ -152,74 +148,8 @@ vr::DriverPose_t northstar::driver::CHMD::GetPose() {
 
     Pose.result = vr::TrackingResult_Running_OK;
     Pose.deviceIsConnected = true;
-    Pose.willDriftInYaw = false;
-    Pose.shouldApplyHeadModel = false;
-
-    Pose.qWorldFromDriverRotation = vr::HmdQuaternion_t{ 1, 0, 0, 0 };
-    Pose.vecWorldFromDriverTranslation[0] = 0;
-    Pose.vecWorldFromDriverTranslation[1] = 0;
-    Pose.vecWorldFromDriverTranslation[2] = 0;
-
-    // TODO: measure distance / orientation from head to structure sensors rotation
-    Pose.qDriverFromHeadRotation = vr::HmdQuaternion_t{ 1, 0, 0, 0 };
-    Pose.vecDriverFromHeadTranslation[0] = 0;
-    Pose.vecDriverFromHeadTranslation[1] = 0;
-    Pose.vecDriverFromHeadTranslation[2] = 0;
-
-    auto positionAndOrientation = m_pWorldAdapter->FromStructureSensorPoseToOpenVRSpace(
-        RawPose);
-
-    Pose.vecPosition[0] = positionAndOrientation.position.x();
-    Pose.vecPosition[1] = positionAndOrientation.position.y();
-    Pose.vecPosition[2] = positionAndOrientation.position.z();
-
-    Pose.qRotation.w = positionAndOrientation.orientation.w();
-    Pose.qRotation.x = positionAndOrientation.orientation.x();
-    Pose.qRotation.y = positionAndOrientation.orientation.y();
-    Pose.qRotation.z = positionAndOrientation.orientation.z();
-
-    CopyStructureSensorLinearVectorIntoDriverPose(Pose.vecVelocity, RawPose.linearVelocity);
-    CopyStructureSensorLinearVectorIntoDriverPose(Pose.vecAcceleration, RawPose.linearAcceleration);
-    CopyStructureSensorAngularVectorIntoDriverPose(Pose.vecAngularVelocity, RawPose.angularVelocity);
-    CopyStructureSensorAngularVectorIntoDriverPose(Pose.vecAngularAcceleration, RawPose.angularAcceleration);
-
-    Pose.poseTimeOffset = m_pTimeProvider->CurrentUnixTimestamp() - RawPose.timestamp;
     m_pSensorFrameCoordinator->SubmitOpenVRHeadsetPose(Pose);
     return Pose;
-}
-
-// TODO: investigate / fix this is very choppy
-void northstar::driver::CHMD::CopyStructureSensorLinearVectorIntoDriverPose(double* pdDriverPoseVec, const float* pfXRPoseVec) const {
-    //auto v3dOpenVRVec = 
-    //    m_pWorldAdapter->FromStructureSensorLinearVectorArrayToOpenVRSpace(
-    //        std::array<double, 3> {
-    //            pfXRPoseVec[0],
-    //            pfXRPoseVec[1],
-    //            pfXRPoseVec[2]});
-
-    //pdDriverPoseVec[0] = v3dOpenVRVec.x();
-    //pdDriverPoseVec[1] = v3dOpenVRVec.y();
-    //pdDriverPoseVec[2] = v3dOpenVRVec.z();
-    pdDriverPoseVec[0] = 0;
-    pdDriverPoseVec[1] = 0;
-    pdDriverPoseVec[2] = 0;
-}
-
-// TODO: investigate / fix this is very choppy
-void northstar::driver::CHMD::CopyStructureSensorAngularVectorIntoDriverPose(double* pdDriverPoseVec, const float* pfXRPoseVec) const {
-    //auto v3dOpenVRVec = 
-    //    m_pWorldAdapter->FromStructureSensorAngularVectorArrayToOpenVRSpace(
-    //        std::array<double, 3> {
-    //            pfXRPoseVec[0],
-    //            pfXRPoseVec[1],
-    //            pfXRPoseVec[2]});
-
-    //pdDriverPoseVec[0] = v3dOpenVRVec.x();
-    //pdDriverPoseVec[1] = v3dOpenVRVec.y();
-    //pdDriverPoseVec[2] = v3dOpenVRVec.z();
-    pdDriverPoseVec[0] = 0;
-    pdDriverPoseVec[1] = 0;
-    pdDriverPoseVec[2] = 0;
 }
 
 void northstar::driver::CHMD::GetWindowBounds(int32_t* pnX, int32_t* pnY, uint32_t* pnWidth, uint32_t* pnHeight) {

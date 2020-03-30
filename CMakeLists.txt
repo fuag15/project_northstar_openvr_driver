@@ -14,6 +14,9 @@ set(TROMPELOEIL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/trompeloeil/include CAC
 set(LEAPSDK_LIB_DIR ${CMAKE_SOURCE_DIR}/external/LeapSDK/lib CACHE STRING "Leap SDK lib directory")
 set(LEAPSDK_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/LeapSDK/include CACHE STRING "Leap SDK include directory")
 set(LEAPSDK_IMPLEMENTATION_DIR ${CMAKE_SOURCE_DIR}/external/LeapSDK/lib CACHE STRING "Leap SDK implementation directory")
+set(REALSENSE_LIB_DIR ${CMAKE_SOURCE_DIR}/external/RealSenseSDK/lib CACHE STRING "RealSense SDK lib directory")
+set(REALSENSE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/RealSenseSDK/include CACHE STRING "RealSense SDK include directory")
+set(REALSENSE_IMPLEMENTATION_DIR ${CMAKE_SOURCE_DIR}/external/RealSenseSDK/bin CACHE STRING "RealSense SDK implementation directory")
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/D_UNICODE>")
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/DUNICODE>")

@@ -8,7 +8,7 @@ this is a work in progress [more info](TODO.md)
 - View Projection
 - Skeletal tracking
 - Basic input
+- T265 Sensor integration
 
 ### Notable unfinished parts
-- T265 Sensor integration
 - Gesture recognizer

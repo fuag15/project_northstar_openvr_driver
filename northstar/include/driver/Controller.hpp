@@ -41,7 +41,7 @@ namespace northstar {
             virtual vr::DriverPose_t GetPose() override;
             void RunFrame();
         private:
-            static constexpr bool x_bUseDebugTrackerConfig = true; // TODO: read from config
+            static constexpr bool x_bUseDebugTrackerConfig = false; // TODO: read from config
             static constexpr bool x_bUseDebugBasePose = false; // TODO: read from config
             static constexpr bool x_bUseRenderModel = true; // TODO: read from config
             static constexpr double x_dPinchThresholdInMilliMeters = 30; // how close do digits have to be to be considered "pinched"

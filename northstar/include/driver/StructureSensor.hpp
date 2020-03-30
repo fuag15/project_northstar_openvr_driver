@@ -1,23 +1,30 @@
 #pragma once
 
 #include <ST/XRSession.h>
+#include <openvr_driver.h>
 #include <atomic>
 #include <thread>
 
-#include "driver/IStructureSensor.hpp"
+#include "driver/IEnvironmentSensor.hpp"
+#include "math/IWorldAdapter.hpp"
 #include "utility/Logger.hpp"
+#include "utility/ITimeProvider.hpp"
 
 namespace northstar {
     namespace driver {
-        class CStructureSensor : public IStructureSensor
+        class CStructureSensor : public IEnvironmentSensor
         {
         public:
-            CStructureSensor(std::shared_ptr<northstar::utility::CLogger> pLogger);
+            CStructureSensor(
+                std::shared_ptr<northstar::math::IWorldAdapter> pWorldAdapter,
+                std::shared_ptr<northstar::utility::ITimeProvider> pTimeProvider,
+                std::shared_ptr<northstar::utility::CLogger> pLogger);
+
             ~CStructureSensor();
-            virtual bool GetPose(ST::XRPose& pose, EPoseRetrievalError& error) override final;
+            virtual bool GetPose(vr::DriverPose_t& pose, EPoseRetrievalError& error) override final;
             virtual bool SessionStartWasSuccessful() override final;
 
-            virtual void PollingUpdateLoop() override final;
+            void PollingUpdateLoop();
 
         private:
             struct SStatus {
@@ -28,6 +35,10 @@ namespace northstar {
                 std::atomic<bool> bReceivingDepthFrames = false;
                 std::atomic<bool> bDriverModifiedExposureOrGainLastFrame = false;
             };
+
+            void ConvertXRPoseToOpenVRPose(const ST::XRPose& xrPose, vr::DriverPose_t& ovrPose);
+            void CopyStructureSensorLinearVectorIntoDriverPose(double* pdDriverPoseVec, const float* pfXRPoseVec) const;
+            void CopyStructureSensorAngularVectorIntoDriverPose(double* pdDriverPoseVec, const float* pfXRPoseVec) const;
 
             bool ConnectTodrivererverAndStartTracking();
             void DisconnectFromdrivererverAndStopTracking();
@@ -50,6 +61,8 @@ namespace northstar {
             SStatus m_Status;
             bool m_bSessionStartSuccessful;
         
+            std::shared_ptr<northstar::math::IWorldAdapter> m_pWorldAdapter;
+            std::shared_ptr<northstar::utility::ITimeProvider> m_pTimeProvider;
             std::shared_ptr<northstar::utility::CLogger> m_pLogger;
         };
     }

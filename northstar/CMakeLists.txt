@@ -17,6 +17,9 @@ if(NOT DEFINED OPENVR_INCLUDE_DIR
    OR NOT DEFINED LEAPSDK_INCLUDE_DIR
    OR NOT DEFINED LEAPSDK_LIB_DIR
    OR NOT DEFINED LEAPSDK_IMPLEMENTATION_DIR
+   OR NOT DEFINED REALSENSE_INCLUDE_DIR
+   OR NOT DEFINED REALSENSE_LIB_DIR
+   OR NOT DEFINED REALSENSE_IMPLEMENTATION_DIR
    OR NOT DEFINED GLEW_INCLUDE_DIR
    OR NOT DEFINED EIGEN_INCLUDE_DIR
    OR NOT DEFINED TROMPELOEIL_INCLUDE_DIR)
@@ -38,6 +41,8 @@ target_include_directories(northstar PRIVATE ${STRUCTURE_INCLUDE_DIR})
 target_link_libraries(northstar ${STRUCTURE_LIB_DIR}/Structure.lib)
 target_include_directories(northstar PRIVATE ${LEAPSDK_INCLUDE_DIR})
 target_link_libraries(northstar ${LEAPSDK_LIB_DIR}/x64/LeapC.lib)
+target_include_directories(northstar PRIVATE ${REALSENSE_INCLUDE_DIR})
+target_link_libraries(northstar ${REALSENSE_LIB_DIR}/realsense2.lib)
 target_include_directories(northstar PRIVATE ${GLEW_INCLUDE_DIR})
 target_include_directories(northstar PRIVATE ${EIGEN_INCLUDE_DIR})
 target_include_directories(northstar PRIVATE ${DOCTEST_INCLUDE_DIR})
@@ -57,6 +62,8 @@ target_include_directories(northstar PRIVATE ${LEAPSDK_INCLUDE_DIR})
 target_link_libraries(northstar ${LEAPSDK_LIB_DIR}/x64/LeapC.lib)
 target_include_directories(northstar_tests PRIVATE ${STRUCTURE_INCLUDE_DIR})
 target_link_libraries(northstar_tests ${STRUCTURE_LIB_DIR}/Structure.lib)
+target_include_directories(northstar PRIVATE ${REALSENSE_INCLUDE_DIR})
+target_link_libraries(northstar ${REALSENSE_LIB_DIR}/realsense2.lib)
 
 # copy dll for tests
 add_custom_command(TARGET northstar_tests
@@ -84,6 +91,13 @@ add_custom_command(TARGET northstar_tests
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${LEAPSDK_IMPLEMENTATION_DIR}/x64/LeapC.dll
+    $<TARGET_FILE_DIR:northstar_tests>
+)
+
+add_custom_command(TARGET northstar_tests
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${REALSENSE_IMPLEMENTATION_DIR}/realsense2.dll
     $<TARGET_FILE_DIR:northstar_tests>
 )
 

@@ -4,14 +4,12 @@
 
 
 #include "mock/MockILogger.hpp"
-#include "mock/MockIStructureSensor.hpp"
+#include "mock/MockIEnvironmentSensor.hpp"
 #include "mock/MockIVRSettings.hpp"
 #include "mock/MockIVRServerDriverHost.hpp"
 #include "mock/MockIMatrixFactory.hpp"
 #include "mock/MockIVectorFactory.hpp"
-#include "mock/MockIWorldAdapter.hpp"
 #include "mock/MockIGeometry.hpp"
-#include "mock/MockITimeProvider.hpp"
 #include "mock/MockIOptics.hpp"
 #include "mock/MockIVRProperties.hpp"
 #include "mock/MockIHostProber.hpp"
@@ -26,15 +24,13 @@
 
 using trompeloeil::_;
 using northstar::utility::MockILogger;
-using northstar::driver::MockIStructureSensor;
+using northstar::driver::MockIEnvironmentSensor;
 using northstar::driver::MockISensorFrameCoordinator;
 using northstar::openvr::MockIVRSettings;
 using northstar::openvr::MockIVRServerDriverHost;
 using northstar::openvr::MockIVRProperties;
 using northstar::utility::MockIHostProber;
-using northstar::math::MockIWorldAdapter;
 using northstar::math::MockIVectorFactory;
-using northstar::utility::MockITimeProvider;
 using northstar::driver::MockIOptics;
 using namespace northstar::test::utils;
 using namespace northstar::math::types;
@@ -46,9 +42,7 @@ TEST_SUITE("HMD") {
     auto pMockIVRProperties = std::make_shared<MockIVRProperties>();
     auto pMockIVRServerDriverHost = std::make_shared<MockIVRServerDriverHost>();
     auto pMockLogger = std::make_shared<MockILogger>();
-    auto pMockStructureSensor = std::make_shared<MockIStructureSensor>();
-    auto pMockWorldAdapter = std::make_shared<MockIWorldAdapter>();
-    auto pMockTimeProvider = std::make_shared<MockITimeProvider>();
+    auto pMockEnvironmentSensor = std::make_shared<MockIEnvironmentSensor>();
     auto pMockVectorFactory = std::make_shared<MockIVectorFactory>();
     auto pMockOptics = std::make_shared<MockIOptics>();
     auto pMockHostProber = std::make_shared<MockIHostProber>();
@@ -71,12 +65,10 @@ TEST_SUITE("HMD") {
         pMockIVRServerDriverHost.get(),
         pMockHostProber,
         pMockIVRProperties,
-        pMockStructureSensor, 
-        pMockWorldAdapter,
+        pMockEnvironmentSensor, 
         pMockVectorFactory,
         pMockOptics,
         pMockSensorFrameCoordinator,
-        pMockTimeProvider,
         pMockLogger);
 
     // TODO: Test
@@ -91,9 +83,9 @@ TEST_SUITE("HMD") {
             GIVEN("There is an active simulation") {
                 Subject.Activate(100);
                 THEN("Run frame sets an updated pose") {
-                    REQUIRE_CALL(*pMockStructureSensor,
+                    REQUIRE_CALL(*pMockEnvironmentSensor,
                         GetPose(_, _))
-                        .SIDE_EFFECT(_2 = northstar::driver::IStructureSensor::EPoseRetrievalError::SessionStartFailed)
+                        .SIDE_EFFECT(_2 = northstar::driver::IEnvironmentSensor::EPoseRetrievalError::SessionStartFailed)
                         .RETURN(false);
 
                     REQUIRE_CALL(*pMockIVRServerDriverHost,
@@ -320,9 +312,9 @@ TEST_SUITE("HMD") {
 
     SCENARIO("HMD must provide Initial pose information to OpenVR") {
         GIVEN("StructureSensor failed to start") {
-            REQUIRE_CALL(*pMockStructureSensor,
+            REQUIRE_CALL(*pMockEnvironmentSensor,
                 GetPose(_, _))
-                .SIDE_EFFECT(_2 = northstar::driver::IStructureSensor::EPoseRetrievalError::SessionStartFailed)
+                .SIDE_EFFECT(_2 = northstar::driver::IEnvironmentSensor::EPoseRetrievalError::SessionStartFailed)
                 .RETURN(false);
 
             WHEN("Get Pose is called") {
@@ -338,9 +330,9 @@ TEST_SUITE("HMD") {
         GIVEN("StructureSensor started") {
             GIVEN("Structure Sensor is Running") {
                 GIVEN("Structure Sensor is initializing") {
-                    REQUIRE_CALL(*pMockStructureSensor,
+                    REQUIRE_CALL(*pMockEnvironmentSensor,
                         GetPose(_, _))
-                        .SIDE_EFFECT(_2 = northstar::driver::IStructureSensor::EPoseRetrievalError::SessionInitializing)
+                        .SIDE_EFFECT(_2 = northstar::driver::IEnvironmentSensor::EPoseRetrievalError::SessionInitializing)
                         .RETURN(false);
 
                     WHEN("Get pose is called") {
@@ -355,9 +347,9 @@ TEST_SUITE("HMD") {
 
                 GIVEN("Structure Sensor has initialized") {
                     GIVEN("Structure Sensor Has an invalid pose") {
-                        REQUIRE_CALL(*pMockStructureSensor,
+                        REQUIRE_CALL(*pMockEnvironmentSensor,
                             GetPose(_, _))
-                            .SIDE_EFFECT(_2 = northstar::driver::IStructureSensor::EPoseRetrievalError::InvalidPoseRecieved)
+                            .SIDE_EFFECT(_2 = northstar::driver::IEnvironmentSensor::EPoseRetrievalError::InvalidPoseRecieved)
                             .RETURN(false);
 
                         WHEN("Get pose is called") {
@@ -380,9 +372,9 @@ TEST_SUITE("HMD") {
             }
 
             GIVEN("Structure Sensor is not Running") {
-                REQUIRE_CALL(*pMockStructureSensor,
+                REQUIRE_CALL(*pMockEnvironmentSensor,
                     GetPose(_, _))
-                    .SIDE_EFFECT(_2 = northstar::driver::IStructureSensor::EPoseRetrievalError::SessionNotRunning)
+                    .SIDE_EFFECT(_2 = northstar::driver::IEnvironmentSensor::EPoseRetrievalError::SessionNotRunning)
                     .RETURN(false);
 
                 WHEN("Get pose is called") {
