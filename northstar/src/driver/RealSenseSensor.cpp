@@ -1,8 +1,10 @@
 #include "driver/RealSenseSensor.hpp"
 
 northstar::driver::CRealSenseSensor::CRealSenseSensor(
+    std::shared_ptr<northstar::utility::ITimeProvider> pTimeProvider,
     std::shared_ptr<northstar::utility::CLogger> pLogger)
 {
+    m_pTimeProvider = pTimeProvider;
     m_pLogger = pLogger;
     m_bSessionStartSuccessful = true;
 	StartPollingDriverServerOnBackgroundThread();
@@ -20,11 +22,13 @@ northstar::driver::CRealSenseSensor::~CRealSenseSensor()
         m_PollingThread.join();
 }
 
+// TODO: Atomics aren't helping here clean this up
 bool northstar::driver::CRealSenseSensor::GetPose(
     vr::DriverPose_t& pose, 
     EPoseRetrievalError& error) {
     const rs2_pose rsPose = m_LastPoseRecieved;
-    ConvertRealSensePoseToOpenVRPose(rsPose, pose);
+    const double rsPoseTimeStamp = m_LastPoseRecievedTimeStamp;
+    ConvertRealSensePoseToOpenVRPose(rsPose, rsPoseTimeStamp, pose);
     if (!SessionStartWasSuccessful()) {
         error = EPoseRetrievalError::SessionStartFailed;
         return false;
@@ -37,7 +41,7 @@ bool northstar::driver::CRealSenseSensor::GetPose(
 }
 
 // TODO: Time offset, this is causing significant rendering chop
-void northstar::driver::CRealSenseSensor::ConvertRealSensePoseToOpenVRPose(const rs2_pose& rsPose, vr::DriverPose_t& ovrPose) {
+void northstar::driver::CRealSenseSensor::ConvertRealSensePoseToOpenVRPose(const rs2_pose& rsPose, const double& rsPoseTimeStamp, vr::DriverPose_t& ovrPose) {
     ovrPose.willDriftInYaw = false;
     ovrPose.shouldApplyHeadModel = false;
 
@@ -64,6 +68,8 @@ void northstar::driver::CRealSenseSensor::ConvertRealSensePoseToOpenVRPose(const
     CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.acceleration*/{ 0, 0, 0 }, ovrPose.vecAcceleration);
     CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.angular_velocity*/{ 0, 0, 0 }, ovrPose.vecAngularVelocity);
     CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.angular_acceleration*/{ 0, 0, 0 }, ovrPose.vecAngularAcceleration);
+
+    ovrPose.poseTimeOffset = m_pTimeProvider->CurrentUnixTimestamp() - rsPoseTimeStamp;
 }
 
 void northstar::driver::CRealSenseSensor::CopyRealSenseSensorVectorIntoDriverPose(const rs2_vector& rsVector, double* pdDriverPoseVec) const {
@@ -88,8 +94,9 @@ void northstar::driver::CRealSenseSensor::PollingUpdateLoop()
         while (!m_bPollingShouldStop)
         {
             auto sFrameSet = rsPipeLine.wait_for_frames();
-            auto sFrame = sFrameSet.first_or_default(RS2_STREAM_POSE);
-            m_LastPoseRecieved = sFrame.as<rs2::pose_frame>().get_pose_data();
+            auto sFrame = sFrameSet.first_or_default(RS2_STREAM_POSE).as<rs2::pose_frame>();
+            m_LastPoseRecieved = sFrame.get_pose_data();
+            m_LastPoseRecievedTimeStamp = sFrame.get_timestamp();
             m_Status.bDriverSessionIsRunning = true;
             std::this_thread::sleep_for(std::chrono::milliseconds(s_unPollingSleepIntervalInMilliSeconds));
         }

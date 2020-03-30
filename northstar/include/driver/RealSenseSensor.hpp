@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "driver/IEnvironmentSensor.hpp"
+#include "utility/ITimeProvider.hpp"
 #include "utility/Logger.hpp"
 
 namespace northstar {
@@ -15,6 +16,7 @@ namespace northstar {
         {
         public:
             CRealSenseSensor(
+                std::shared_ptr<northstar::utility::ITimeProvider> pTimeProvider,
                 std::shared_ptr<northstar::utility::CLogger> pLogger);
 
             ~CRealSenseSensor();
@@ -28,17 +30,19 @@ namespace northstar {
                 std::atomic<bool> bDriverSessionIsRunning = false;
             };
 
-            void ConvertRealSensePoseToOpenVRPose(const rs2_pose& rsPose, vr::DriverPose_t& ovrPose);
+            void ConvertRealSensePoseToOpenVRPose(const rs2_pose& rsPose, const double& rsPoseTimeStamp, vr::DriverPose_t& ovrPose);
             void CopyRealSenseSensorVectorIntoDriverPose(const rs2_vector& pfRealSenseVec, double* pdDriverPoseVec) const;
             void StartPollingDriverServerOnBackgroundThread();
 
             static constexpr size_t s_unPollingSleepIntervalInMilliSeconds = 33;
             std::atomic<rs2_pose> m_LastPoseRecieved;
+            std::atomic<double> m_LastPoseRecievedTimeStamp;
             std::atomic<bool> m_bPollingShouldStop = false;
             std::thread m_PollingThread;
             SStatus m_Status;
             bool m_bSessionStartSuccessful;
 
+            std::shared_ptr<northstar::utility::ITimeProvider> m_pTimeProvider;
             std::shared_ptr<northstar::utility::CLogger> m_pLogger;
         };
     }

@@ -33,6 +33,7 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
             m_pLogger);
     } else { // EEnvironmentSensor::RealSenseT265
         m_pEnvironmentSensor = std::make_shared<northstar::driver::CRealSenseSensor>(
+            m_pTimeProvider,
             m_pLogger);
     }
 
