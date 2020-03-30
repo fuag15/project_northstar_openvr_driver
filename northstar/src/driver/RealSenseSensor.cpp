@@ -36,7 +36,7 @@ bool northstar::driver::CRealSenseSensor::GetPose(
     return true;
 }
 
-// TODO: Time offset
+// TODO: Time offset, this is causing significant rendering chop
 void northstar::driver::CRealSenseSensor::ConvertRealSensePoseToOpenVRPose(const rs2_pose& rsPose, vr::DriverPose_t& ovrPose) {
     ovrPose.willDriftInYaw = false;
     ovrPose.shouldApplyHeadModel = false;
