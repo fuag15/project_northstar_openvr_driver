@@ -146,6 +146,10 @@ vr::DriverPose_t northstar::driver::CHMD::GetPose() {
         return Pose;
     }
 
+    std::string debug = "";
+    debug += "%%%%%% Position: (" + std::to_string(Pose.vecPosition[0]) + ", " + std::to_string(Pose.vecPosition[1]) + ", " + std::to_string(Pose.vecPosition[2]) + ")\n";
+    m_pLogger->Log(debug.data());
+
     Pose.result = vr::TrackingResult_Running_OK;
     Pose.deviceIsConnected = true;
     m_pSensorFrameCoordinator->SubmitOpenVRHeadsetPose(Pose);

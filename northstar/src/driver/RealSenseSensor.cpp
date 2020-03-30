@@ -58,10 +58,12 @@ void northstar::driver::CRealSenseSensor::ConvertRealSensePoseToOpenVRPose(const
     ovrPose.qRotation.z = rsPose.rotation.z;
 
     CopyRealSenseSensorVectorIntoDriverPose(rsPose.translation, ovrPose.vecPosition);
-    CopyRealSenseSensorVectorIntoDriverPose(rsPose.velocity, ovrPose.vecVelocity);
-    CopyRealSenseSensorVectorIntoDriverPose(rsPose.acceleration, ovrPose.vecAcceleration);
-    CopyRealSenseSensorVectorIntoDriverPose(rsPose.angular_velocity, ovrPose.vecAngularVelocity);
-    CopyRealSenseSensorVectorIntoDriverPose(rsPose.angular_acceleration, ovrPose.vecAngularAcceleration);
+
+    // TODO: These are choppy
+    CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.velocity*/{ 0, 0, 0 }, ovrPose.vecVelocity);
+    CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.acceleration*/{ 0, 0, 0 }, ovrPose.vecAcceleration);
+    CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.angular_velocity*/{ 0, 0, 0 }, ovrPose.vecAngularVelocity);
+    CopyRealSenseSensorVectorIntoDriverPose(/*rsPose.angular_acceleration*/{ 0, 0, 0 }, ovrPose.vecAngularAcceleration);
 }
 
 void northstar::driver::CRealSenseSensor::CopyRealSenseSensorVectorIntoDriverPose(const rs2_vector& rsVector, double* pdDriverPoseVec) const {
