@@ -41,7 +41,7 @@ namespace northstar {
                 RealSenseT265,
             };
 
-            static constexpr bool x_bControllerDebugMode = true; // TODO: read this from config
+            static constexpr bool x_bControllerDebugMode = false; // TODO: read this from config
             static constexpr bool x_bShouldBlockStandbyMode = true; // TODO: read this from config
             static constexpr EEnvironmentSensor x_eSelectedEnvironmentSensor = EEnvironmentSensor::RealSenseT265; // TODO: read this from config
             static constexpr std::array<northstar::driver::types::EHand, 2> x_aeHands = { northstar::driver::types::EHand::Left, northstar::driver::types::EHand::Right };

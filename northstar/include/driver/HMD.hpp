@@ -46,9 +46,9 @@ namespace northstar {
             const std::string_view& GetSerialNumber() const;
 
         private:
-            static constexpr bool x_bUseFakeScreenConfig = true; // TODO: read from config
-            static constexpr bool x_bUseFakeProjection = true; // TODO: read from config
-            static constexpr bool x_bUseFakeWarp = true; // TODO: read from config
+            static constexpr bool x_bUseFakeScreenConfig = false; // TODO: read from config
+            static constexpr bool x_bUseFakeProjection = false; // TODO: read from config
+            static constexpr bool x_bUseFakeWarp = false; // TODO: read from config
             static constexpr bool x_bUseFakeTracking = false; // TODO: read from config
             static constexpr int32_t x_iFallbackWindowOriginX = 0;
             static constexpr float x_fUserHeadToEyeDepthInMeters = 0.0f; // TODO: validate this
