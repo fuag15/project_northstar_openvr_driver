@@ -60,4 +60,4 @@ vrpathreg adddriver <full_path_to/resources/northstar>
 
 - restart steamvr. If driver is taking a long time to start, chances are it got built in debug mode, Release mode optimizes a way a bunch of intermediate object creation during the lens distortion solve that happens at startup. If things are still going south please maka a bug, I'll do my best to get to them asap.
 
-- if you wish to remove controller emulation, disable the leap driver in SteamVR developer settings.
+- if you wish to remove controller emulation edit your .vrsettings configuration section and change enableControllers to false, if you wish to disable the models in game do the same for useRenderModels.
