@@ -1,7 +1,10 @@
 #include "driver/Server.hpp"
 
+using namespace northstar::driver::settings::keys;
+
 vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverContext) {
     VR_INIT_SERVER_DRIVER_CONTEXT(pDriverContext);
+    LoadConfiguration();
     m_pLogger = std::make_shared<northstar::utility::CLogger>(vr::VRDriverLog());
     m_pVRProperties = std::make_shared<northstar::openvr::CVRProperties>(vr::VRProperties());
     m_pHostProber = std::make_shared<northstar::utility::CHostProber>();
@@ -37,7 +40,7 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
             m_pLogger);
     }
 
-    if (m_pEnvironmentSensor->SessionStartWasSuccessful() || x_bControllerDebugMode) {
+    if (m_pEnvironmentSensor->SessionStartWasSuccessful() || m_sConfiguration.bUseControllerDebugMode) {
         m_pHMD = std::make_unique<northstar::driver::CHMD>(
             vr::VRSettings(),
             vr::VRServerDriverHost(),
@@ -54,28 +57,37 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
             vr::TrackedDeviceClass_HMD,
             m_pHMD.get());
 
-        for (const auto& eHand : x_aeHands) {
-            m_pControllers.push_back(
-                std::make_unique<CController>(
-                    m_pSensorFrameCoordinator,
-                    m_pWorldAdapter,
-                    m_pVectorFactory,
-                    m_pSkeletalAdapter,
-                    m_pLogger,
-                    m_pVRProperties,
-                    vr::VRSettings(),
-                    vr::VRServerDriverHost(),
-                    vr::VRDriverInput(),
-                    eHand));
+        if (m_sConfiguration.bEnableControllers) {
+            for (const auto& eHand : x_aeHands) {
+                m_pControllers.push_back(
+                    std::make_unique<CController>(
+                        m_pSensorFrameCoordinator,
+                        m_pWorldAdapter,
+                        m_pVectorFactory,
+                        m_pSkeletalAdapter,
+                        m_pLogger,
+                        m_pVRProperties,
+                        vr::VRSettings(),
+                        vr::VRServerDriverHost(),
+                        vr::VRDriverInput(),
+                        eHand));
 
-            vr::VRServerDriverHost()->TrackedDeviceAdded(
-                m_pControllers.back()->GetSerialNumber().data(),
-                vr::TrackedDeviceClass_Controller,
-                m_pControllers.back().get());
+                vr::VRServerDriverHost()->TrackedDeviceAdded(
+                    m_pControllers.back()->GetSerialNumber().data(),
+                    vr::TrackedDeviceClass_Controller,
+                    m_pControllers.back().get());
+            }
         }
     }
 
     return vr::EVRInitError::VRInitError_None;
+}
+
+void northstar::driver::CServer::LoadConfiguration() {
+    auto pVRSettings = vr::VRSettings();
+    m_sConfiguration.bUseControllerDebugMode = pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseControllerDebugMode.data());
+    m_sConfiguration.bShouldBlockStandbyMode = pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svShouldBlockStandbyMode.data());
+    m_sConfiguration.bEnableControllers = pVRSettings->GetBool(configuration::k_svRoot.data(), configuration::k_svEnableControllers.data());
 }
 
 void northstar::driver::CServer::Cleanup() {
@@ -116,7 +128,7 @@ void northstar::driver::CServer::RunFrame() {
 }
 
 bool northstar::driver::CServer::ShouldBlockStandbyMode() { 
-    return x_bShouldBlockStandbyMode; 
+    return m_sConfiguration.bShouldBlockStandbyMode; 
 }
 
 void northstar::driver::CServer::EnterStandby() {}

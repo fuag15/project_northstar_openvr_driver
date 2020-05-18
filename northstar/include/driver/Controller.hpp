@@ -41,9 +41,6 @@ namespace northstar {
             virtual vr::DriverPose_t GetPose() override;
             void RunFrame();
         private:
-            static constexpr bool x_bUseDebugTrackerConfig = false; // TODO: read from config
-            static constexpr bool x_bUseDebugBasePose = false; // TODO: read from config
-            static constexpr bool x_bUseRenderModel = true; // TODO: read from config
             static constexpr double x_dPinchThresholdInMilliMeters = 30; // how close do digits have to be to be considered "pinched"
             static constexpr std::string_view x_svModelNumber = "NorthStarHumanHand";
             static constexpr std::string_view x_svSerialNumberLeft = "LeftHand";
@@ -61,6 +58,13 @@ namespace northstar {
             struct SLeapMotionConfiguration {
                 northstar::math::types::Vector3d v3dPosition;
                 northstar::math::types::Quaterniond qdOrientation;
+            };
+
+            struct SConfiguration {
+                SLeapMotionConfiguration sLeapMotionConfiguration;
+                bool bUseDebugTrackerConfig;
+                bool bUseDebugBasePose;
+                bool bUseRenderModel;
             };
 
             // TODO: move input state into gesture recognizer
@@ -100,7 +104,7 @@ namespace northstar {
 
             void EmitAndClearInputStateEvents();
 
-            SLeapMotionConfiguration m_sLeapMotionConfiguration;
+            SConfiguration m_sConfiguration;
             SOpenVRState m_sOpenVRState;
 
             std::shared_ptr<northstar::openvr::IVRProperties> m_pVRProperties;

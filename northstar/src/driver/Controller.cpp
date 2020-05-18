@@ -49,13 +49,17 @@ void northstar::driver::CController::ClearOpenVRState() {
 }
 
 void northstar::driver::CController::LoadConfiguration() {
-    if (x_bUseDebugTrackerConfig == true) {
-        m_sLeapMotionConfiguration.v3dPosition = m_pVectorFactory->V3DFromArray({ 0.0, 0.0, 0.0 });
-        m_sLeapMotionConfiguration.qdOrientation = Quaterniond(1.0, 0.0, 0.0, 0.0);
+    m_sConfiguration.bUseDebugTrackerConfig = m_pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseDebugTrackerConfig.data());
+    m_sConfiguration.bUseDebugBasePose = m_pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseDebugBasePose.data());
+    m_sConfiguration.bUseRenderModel = m_pVRSettings->GetBool(configuration::k_svRoot.data(), configuration::k_svUseRenderModel.data());
+
+    if (m_sConfiguration.bUseDebugTrackerConfig) {
+        m_sConfiguration.sLeapMotionConfiguration.v3dPosition = m_pVectorFactory->V3DFromArray({ 0.0, 0.0, 0.0 });
+        m_sConfiguration.sLeapMotionConfiguration.qdOrientation = Quaterniond(1.0, 0.0, 0.0, 0.0);
         return;
     }
 
-    m_sLeapMotionConfiguration.v3dPosition =
+    m_sConfiguration.sLeapMotionConfiguration.v3dPosition =
         m_pWorldAdapter->FromUnityPositionToOpenVRPosition(
             m_pVectorFactory->V3DFromArray(
                 { m_pVRSettings->GetFloat(leapMotion::k_svRoot.data(), leapMotion::k_svPositionX.data())
@@ -64,7 +68,7 @@ void northstar::driver::CController::LoadConfiguration() {
             )
         );
 
-    m_sLeapMotionConfiguration.qdOrientation =
+    m_sConfiguration.sLeapMotionConfiguration.qdOrientation =
         m_pWorldAdapter->FromUnityQuaternionToOpenVRQuaternion(
             Quaterniond(
                 m_pVRSettings->GetFloat(leapMotion::k_svRoot.data(), leapMotion::k_svRotationW.data()),
@@ -90,7 +94,7 @@ void northstar::driver::CController::SetOpenVRProperties() {
         vr::Prop_SerialNumber_String, 
         m_eHand == EHand::Left ? x_svSerialNumberLeft.data() : x_svSerialNumberRight.data() );
 
-    if (x_bUseRenderModel) {
+    if (m_sConfiguration.bUseRenderModel) {
         m_pVRProperties->SetStringProperty(
             m_sOpenVRState.ulPropertyContainer,
             vr::Prop_RenderModelName_String,
@@ -198,8 +202,8 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
 
     static const AffineMatrix4d m4dLeapConversionMatrix = m_pWorldAdapter
         ->ConversionMatrixFromLeapMotionTrackingSpaceToHMDRelativeSpace(
-            m_sLeapMotionConfiguration.v3dPosition,
-            m_sLeapMotionConfiguration.qdOrientation);
+            m_sConfiguration.sLeapMotionConfiguration.v3dPosition,
+            m_sConfiguration.sLeapMotionConfiguration.qdOrientation);
 
     AffineMatrix4d m4dHMDToWorldSpace = m_pWorldAdapter
         ->ConversionMatrixFromHMDSpaceToOpenVRWorldSpace(
@@ -230,7 +234,7 @@ vr::DriverPose_t northstar::driver::CController::GetPose() {
     sPose.qRotation.y = orientation.y();
     sPose.qRotation.z = orientation.z();
 
-    if (x_bUseDebugBasePose) {
+    if (m_sConfiguration.bUseDebugBasePose) {
         if (m_eHand == EHand::Left) {
             sPose.vecPosition[0] = -0.3;
             sPose.vecPosition[1] = -0.2;

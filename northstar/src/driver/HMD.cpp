@@ -31,10 +31,14 @@ northstar::driver::CHMD::CHMD(
 
 void northstar::driver::CHMD::LoadConfiguration() {
     // TODO: use vector factory
+    m_sConfiguration.bUseFakeScreenConfig = m_pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseFakeScreenConfig.data());
+    m_sConfiguration.bUseFakeProjection = m_pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseFakeProjection.data());
+    m_sConfiguration.bUseFakeWarp = m_pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseFakeWarp.data());
+    m_sConfiguration.bUseFakeTracking = m_pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseFakeTracking.data());
     m_sConfiguration.dIPD = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svIPD.data());
     m_sConfiguration.sDisplayConfiguration.dFrequency = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svFrequency.data());
     m_sConfiguration.sDisplayConfiguration.dPhotonLatency = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svPhotonLatency.data());
-    if (x_bUseFakeScreenConfig) {
+    if (m_sConfiguration.bUseFakeScreenConfig) {
         //TODO: Put these in constants
         m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin << 100, 100;
         m_sConfiguration.sDisplayConfiguration.v2iWindowDimensions << 1000, 1000;
@@ -74,7 +78,7 @@ vr::EVRInitError northstar::driver::CHMD::Activate(vr::TrackedDeviceIndex_t unOb
 }
 
 void northstar::driver::CHMD::SetOpenVRProperties() {
-    if (x_bUseFakeScreenConfig)
+    if (m_sConfiguration.bUseFakeScreenConfig)
         m_pVRProperties->SetBoolProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_IsOnDesktop_Bool, false);
 
     m_pVRProperties->SetStringProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_SerialNumber_String, x_svSerialNumber.data() );
@@ -115,7 +119,7 @@ bool northstar::driver::CHMD::IsDisplayOnDesktop() {
 }
 
 bool northstar::driver::CHMD::IsDisplayRealDisplay() { 
-    if (x_bUseFakeScreenConfig)
+    if (m_sConfiguration.bUseFakeScreenConfig)
         return false;
 
     return x_bIsDisplayRealDisplay; 
@@ -126,7 +130,7 @@ bool northstar::driver::CHMD::IsDisplayRealDisplay() {
 vr::DriverPose_t northstar::driver::CHMD::GetPose() {
     static northstar::driver::IEnvironmentSensor::EPoseRetrievalError eError;
 
-    if (x_bUseFakeTracking) {
+    if (m_sConfiguration.bUseFakeTracking) {
         vr::DriverPose_t sFakePose = { 0 };
         sFakePose.poseIsValid = true;
         sFakePose.deviceIsConnected = true;
@@ -179,7 +183,7 @@ void northstar::driver::CHMD::GetEyeOutputViewport(vr::EVREye eEye, uint32_t* pn
 }
 
 void northstar::driver::CHMD::GetProjectionRaw(vr::EVREye eEye, float* pfLeft, float* pfRight, float* pfTop, float* pfBottom) {
-    if (x_bUseFakeProjection) {
+    if (m_sConfiguration.bUseFakeProjection) {
         *pfLeft = -1.0;
         *pfRight = 1.0;
         *pfTop = -1.0;
@@ -196,7 +200,7 @@ void northstar::driver::CHMD::GetProjectionRaw(vr::EVREye eEye, float* pfLeft, f
 
 vr::DistortionCoordinates_t northstar::driver::CHMD::ComputeDistortion(vr::EVREye eEye, float fU, float fV) {
     vr::DistortionCoordinates_t coordinates;
-    if (x_bUseFakeWarp) {
+    if (m_sConfiguration.bUseFakeWarp) {
         coordinates.rfRed[0] = fU;
         coordinates.rfRed[1] = fV;
         coordinates.rfGreen[0] = fU;

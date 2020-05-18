@@ -4,6 +4,20 @@
   "directory": "",
   "resourceOnly": false,
   "hmd_presence": [ "*.*" ],
+  "debug": {
+    "useDebugTrackerConfig": false,
+    "useDebugBasePose": false,
+    "useFakeScreenConfig": false,
+    "useFakeProjection": false,
+    "useFakeWarp": false,
+    "useFakeTracking": false,
+    "useControllerDebugMode": false,
+    "shouldBlockStandbyMode": true,
+  },
+  "configuration": {
+    "useRenderModel": true,
+    "enableControllers": true,
+  },
   "display": {
     "originX": -1,
     "originY": 0,

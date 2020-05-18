@@ -11,6 +11,7 @@
 #include "driver/StructureSensor.hpp"
 #include "driver/RealSenseSensor.hpp"
 #include "driver/Types.hpp"
+#include "driver/Settings.hpp"
 #include "openvr/VRProperties.hpp"
 #include "math/WorldAdapter.hpp"
 #include "math/MatrixFactory.hpp"
@@ -41,11 +42,19 @@ namespace northstar {
                 RealSenseT265,
             };
 
-            static constexpr bool x_bControllerDebugMode = true; // TODO: read this from config
-            static constexpr bool x_bShouldBlockStandbyMode = true; // TODO: read this from config
             static constexpr EEnvironmentSensor x_eSelectedEnvironmentSensor = EEnvironmentSensor::RealSenseT265; // TODO: read this from config
             static constexpr std::array<northstar::driver::types::EHand, 2> x_aeHands = { northstar::driver::types::EHand::Left, northstar::driver::types::EHand::Right };
+            struct SServerConfiguration{
+                northstar::math::types::Vector3d v3dPosition;
+                northstar::math::types::Quaterniond qdOrientation;
+                bool bUseControllerDebugMode;
+                bool bShouldBlockStandbyMode;
+                bool bEnableControllers;
+            };
 
+            void LoadConfiguration();
+
+            SServerConfiguration m_sConfiguration;
             std::shared_ptr<northstar::math::CVectorFactory> m_pVectorFactory;
             std::shared_ptr<northstar::math::CMatrixFactory> m_pMatrixFactory;
             std::shared_ptr<northstar::math::CWorldAdapter> m_pWorldAdapter;

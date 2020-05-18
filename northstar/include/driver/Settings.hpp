@@ -6,6 +6,34 @@ namespace northstar {
     namespace driver {
         namespace settings {
             namespace keys {
+                namespace debug {
+                    static constexpr std::string_view k_svRoot = "debug";
+
+                    /* from Controller */
+                    static constexpr std::string_view k_svUseDebugTrackerConfig = "useDebugTrackerConfig";
+                    static constexpr std::string_view k_svUseDebugBasePose = "useDebugBasePose";
+
+                    /* from HMD */
+                    static constexpr std::string_view k_svUseFakeScreenConfig = "useFakeScreenConfig";
+                    static constexpr std::string_view k_svUseFakeProjection = "useFakeProjection";
+                    static constexpr std::string_view k_svUseFakeWarp = "useFakeWarp";
+                    static constexpr std::string_view k_svUseFakeTracking = "useFakeTracking";
+
+                    /* from Server */
+                    static constexpr std::string_view k_svUseControllerDebugMode = "useControllerDebugMode";
+                    static constexpr std::string_view k_svShouldBlockStandbyMode = "shouldBlockStandbyMode";
+                }
+
+                namespace configuration {
+                    static constexpr std::string_view k_svRoot = "configuration";
+
+                    /* from Controller */
+                    static constexpr std::string_view k_svUseRenderModel = "useRenderModel";
+
+                    /* from Server */
+                    static constexpr std::string_view k_svEnableControllers = "enableControllers";
+                }
+
                 namespace display {
                     static constexpr std::string_view k_svRoot = "display";
                     static constexpr std::string_view k_svOriginX = "originX";
