@@ -7,4 +7,4 @@
 #include "driver/Server.hpp"
 #include "utility/Preprocessor.hpp"
 
-HMD_DLL_EXPORT void* HmdDriverFactory(const char *pInterfaceName, int *pReturnCode);
+HMD_EXPORT void* HmdDriverFactory(const char *pInterfaceName, int *pReturnCode);
