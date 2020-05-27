@@ -2,3 +2,5 @@
 *.sln
 *.vc*
 build
+/output.log
+/setup.log
