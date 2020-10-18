@@ -1,13 +1,16 @@
+# Immediate Goals
+- Windows Installer and github release packaging
+- linux build
+
 # General Polish
 - Test clean up (add tests to account for default poses)
-- make installer, remove error on startup if structure sensor is not available
+- remove error on startup if structure sensor is not available
 - fix hmd presence checks / serial numbers
 - read relevant debug flags from config file not hard coded
 - build to a directory you can install to
 - better hashing function
 - clean up serial numbers to be more representative
 - default input bindings polish
-- make installer for easier dist
 - hook into ctest
 
 # Optics Polish
