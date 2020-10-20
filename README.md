@@ -25,9 +25,9 @@ In particular you'll need:
 - openvr sdk [built from source or prebuilt](https://github.com/ValveSoftware/openvr).
 - a working [SteamVR and SteamVR for linux](https://store.steampowered.com/about/).
 
-Platform specfic code has been written in IFDEF's and should be complete for Windows / Linux hosts. 
+Platform specfic code has been written in IFDEF's and should be complete for Windows / Linux / OSX hosts. 
 
-Please let me know if you are running things on linux and make github isseus for any problems. Supporting other operating systems is a priority for me but SteamVR did not play nice with my linux development environment and I haven't taken the time to get it working yet.
+Please let me know if you are running things on linux and make github isseus for any problems. Supporting other operating systems is a priority for me but I havent got SteamVR set up on my linux development host.
 
 ### Build Instructions
 
