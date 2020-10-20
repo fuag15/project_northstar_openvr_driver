@@ -18,10 +18,4 @@ set(REALSENSE_LIB_DIR ${CMAKE_SOURCE_DIR}/external/RealSenseSDK/lib CACHE STRING
 set(REALSENSE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/RealSenseSDK/include CACHE STRING "RealSense SDK include directory")
 set(REALSENSE_IMPLEMENTATION_DIR ${CMAKE_SOURCE_DIR}/external/RealSenseSDK/bin CACHE STRING "RealSense SDK implementation directory")
 
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/D_UNICODE>")
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/DUNICODE>")
-
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/D_UNICODE>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/DUNICODE>")
-
 add_subdirectory(northstar)
