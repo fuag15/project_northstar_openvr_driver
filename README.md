@@ -4,7 +4,7 @@ This is a work in progress [more info](TODO.md)
 
 Thanks to Lincoln Stein for putting together some windows [installer scripts](https://github.com/ltstein/project_northstar_openvr_driver) to make getting started easier!
 
-There are also packaged binaries and a NSIS based installer for Windows x64 based builts [availabe](https://github.com/fuag15/project_northstar_openvr_driver/releases)
+There are also packaged binaries and a NSIS based installer for Windows x64 builds [availabe](https://github.com/fuag15/project_northstar_openvr_driver/releases). The NSIS build is configured for RealSense T265 sensors.
 
 ### Working with some polish needed
 - Head Tracking
