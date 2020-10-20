@@ -27,8 +27,7 @@ In particular you'll need:
 
 Platform specfic code has been written in IFDEF's and should be complete for Windows / Linux hosts. 
 
-Please let me know if you are running things on linux and make github isseus for any problems. 
-I don't have a VR Linux setup to test against at the moment or plan on investing in getting it set up but if there's enough interest I would.
+Please let me know if you are running things on linux and make github isseus for any problems. Supporting other operating systems is a priority for me but SteamVR did not play nice with my linux development environment and I haven't taken the time to get it working yet.
 
 An xcb equivalent for probing monitor's X offset might be needed, for now on non Windows platforms a default offset of 0 is used
 
