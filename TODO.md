@@ -12,6 +12,7 @@
 - clean up serial numbers to be more representative
 - default input bindings polish
 - hook into ctest
+- this hasn't caused any known issues but monitor property querying is likely querying the wrong monitor and only implemented on win32 platforms. See HostProber for details
 
 # Optics Polish
 - Play around with / optimize parameters for Warp Solver

@@ -1,6 +1,7 @@
 #include "utility/HostProber.hpp"
 
 #if defined(_WIN32)
+// TODO: This doesn't seem to be causing issues but it is likely querying the wrong display 
 std::optional<long> northstar::utility::CHostProber::m_slDisplayOriginX = std::nullopt;
 BOOL CALLBACK northstar::utility::CHostProber::InfoEnumProc(HMONITOR hMonitor, HDC hdc, LPRECT lprcMonitor, LPARAM pData) {
     MONITORINFOEX info = { 0 };
@@ -15,7 +16,7 @@ BOOL CALLBACK northstar::utility::CHostProber::InfoEnumProc(HMONITOR hMonitor, H
 }
 #endif 
 
-// TODO: clean this up
+// TODO: clean this up this is likely not querying the right display
 std::optional<long> northstar::utility::CHostProber::ProbeDisplayOriginX() const {
 #if defined(_WIN32)
     m_slDisplayOriginX.reset();

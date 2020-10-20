@@ -29,8 +29,6 @@ Platform specfic code has been written in IFDEF's and should be complete for Win
 
 Please let me know if you are running things on linux and make github isseus for any problems. Supporting other operating systems is a priority for me but SteamVR did not play nice with my linux development environment and I haven't taken the time to get it working yet.
 
-An xcb equivalent for probing monitor's X offset might be needed, for now on non Windows platforms a default offset of 0 is used
-
 ### Build Instructions
 
 Versions of vendored libs not included and where to get them:
