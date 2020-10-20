@@ -26,6 +26,7 @@ std::optional<long> northstar::utility::CHostProber::ProbeDisplayOriginX() const
         0);
     return m_slDisplayOriginX;
 #else
+    // TODO: XCB equivalent
     return std::nullopt;
 #endif
 }
