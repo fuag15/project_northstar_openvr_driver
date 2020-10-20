@@ -2,6 +2,8 @@
 
 this is a work in progress [more info](TODO.md)
 
+Thanks to Lincoln Stein for putting together some windows [installer scripts](https://github.com/ltstein/project_northstar_openvr_driver) to make getting started easier!
+
 ### Working with some polish needed
 - Head Tracking
 - Hand Tracking
