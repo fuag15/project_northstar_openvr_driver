@@ -58,7 +58,11 @@ cmake -G "Visual Studio 16 2019" -A x64 ..
 
 - Copy all these dll's to wherever you want to install from, they should be combined into the `resources/northstar/bin/win64` directory, make this if it does not exist and put all generated dll's inside.
 
-- Next register the driver with steamVR (using vrpathreg tool found in SteamVR bin folder) for me this is located at `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\bin\win64\vrpathreg.exe`
+## Install steps
+
+If using the installer instead of resources/northstar this will just be the northstar folder wherever you installed things.
+
+- register the driver with steamVR (using vrpathreg tool found in SteamVR bin folder) for me this is located at `C:\Program Files (x86)\Steam\steamapps\common\SteamVR\bin\win64\vrpathreg.exe`
 
 ```
 vrpathreg adddriver <full_path_to/resources/northstar>
@@ -75,5 +79,7 @@ vrpathreg adddriver <full_path_to/resources/northstar>
 - Running steamvr with the northstar connected (and no other hmd's connected) should work at this point but probably not have the right configuration for your hmd. Take the .json file from configuring your nothstar and convert it to the format found in `resources/northstar/resources/settings/default.vrsettings`
 
 - restart steamvr. If driver is taking a long time to start, chances are it got built in debug mode, Release mode optimizes a way a bunch of intermediate object creation during the lens distortion solve that happens at startup. If things are still going south please maka a bug, I'll do my best to get to them asap.
+
+## Configuration
 
 - if you wish to remove controller emulation edit your .vrsettings configuration section and change enableControllers to false, if you wish to disable the models in game do the same for useRenderModels.

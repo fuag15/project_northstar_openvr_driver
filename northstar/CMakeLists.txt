@@ -124,3 +124,70 @@ source_group("platform" FILES ${PLATFORM_SOURCES})
 
 # set to test startup project
 set_property (DIRECTORY PROPERTY VS_STARTUP_PROJECT "northstar_tests")
+
+# installer stuff
+install(TARGETS northstar
+  DESTINATION northstar/bin/win64
+  COMPONENT driver)
+
+install(FILES
+  ${STRUCTURE_IMPLEMENTATION_DIR}/Structure.dll
+  ${OPENVR_IMPLEMENTATION_DIR}/openvr_api.dll
+  ${LEAPSDK_IMPLEMENTATION_DIR}/x64/LeapC.dll
+  ${REALSENSE_IMPLEMENTATION_DIR}/realsense2.dll
+  DESTINATION northstar/bin/win64
+  COMPONENT driver)
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/resources/northstar/driver.vrdrivermanifest
+  DESTINATION northstar
+  COMPONENT driver)
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/icons/humanhand_left.svg
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/icons/humanhand_right.svg
+  DESTINATION northstar/resources/icons
+  COMPONENT driver)
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/input/northstar_legacy_bindings.json
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/input/northstar_profile.json
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/input/steamvr_compositor_bindings_northstar.json
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/input/steamvr_home_bindings_northstar.json
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/input/steamvr_lab_bindings_northstar.json
+  DESTINATION northstar/resources/input
+  COMPONENT driver)
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/resources/northstar/resources/settings/default.vrsettings
+  DESTINATION northstar/resources/settings
+  COMPONENT driver)
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/CREDITS.md
+  ${CMAKE_SOURCE_DIR}/README.md
+  ${CMAKE_SOURCE_DIR}/TODO.md
+  ${CMAKE_SOURCE_DIR}/LICENSE
+  DESTINATION .
+  COMPONENT driver)
+
+include(InstallRequiredSystemLibraries)
+install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+  DESTINATION northstar/bin/win64
+	COMPONENT driver)
+
+set(CPACK_GENERATOR NSIS)
+set(CPACK_PACKAGE_NAME "Northstar SteamVR Driver")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "SteamVR Driver for the project northstar AR headset")
+set(CPACK_PACKAGE_VERSION "0.1.0")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "Northstar SteamVR Driver")
+SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Northstar SteamVR Driver")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+SET(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/resources/installer/POST_INSTALL.md")
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
+	
+include(CPack)
+
+cpack_add_component(northstar
+	DISPLAY_NAME "Northstar SteamVR Driver"
+	DESCRIPTION "Northstar SteamVR Driver")
