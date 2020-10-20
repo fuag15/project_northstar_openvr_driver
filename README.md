@@ -4,21 +4,6 @@ this is a work in progress [more info](TODO.md)
 
 Thanks to Lincoln Stein for putting together some windows [installer scripts](https://github.com/ltstein/project_northstar_openvr_driver) to make getting started easier!
 
-
-### Linux / MacOS / Other Support 
-
-If you're using the RealSense T265 sensor everything should compile and work on linux but you will need to configure cmake to find the appropriate linux versions of supporting libraries.
-In particular you'll need: 
-
-- linux leap motion LeapC SDK as well availabe from [their website](https://developer.leapmotion.com/sdk-leap-motion-controller/)
-- the linux realsense sdk available for [ubuntu 16.04 / 18.04, or OSX prebuilt](https://www.intelrealsense.com/sdk-2/) or [built from source](https://github.com/IntelRealSense/librealsense).
-- openvr sdk [built from source or prebuilt](https://github.com/ValveSoftware/openvr).
-- a working [SteamVR and SteamVR for linux](https://store.steampowered.com/about/).
-
-There's no Windows Specific code. 
-
-Please let me know if you are running things on linux, I don't have a VR Linux setup to test against at the moment or plan on investing in getting it set up.
-
 ### Working with some polish needed
 - Head Tracking
 - Hand Tracking
@@ -29,6 +14,23 @@ Please let me know if you are running things on linux, I don't have a VR Linux s
 
 ### Notable unfinished parts
 - Gesture recognizer
+
+### Linux Support 
+
+If you're using the RealSense T265 sensor everything should compile and work on linux but you will need to configure cmake to find the appropriate linux versions of supporting libraries.
+In particular you'll need: 
+
+- linux leap motion LeapC SDK as well availabe from [their website](https://developer.leapmotion.com/sdk-leap-motion-controller/)
+- the linux realsense sdk available for [ubuntu 16.04 / 18.04, or OSX prebuilt](https://www.intelrealsense.com/sdk-2/) or [built from source](https://github.com/IntelRealSense/librealsense).
+- openvr sdk [built from source or prebuilt](https://github.com/ValveSoftware/openvr).
+- a working [SteamVR and SteamVR for linux](https://store.steampowered.com/about/).
+
+Platform specfic code has been written in IFDEF's and should be complete for Windows / Linux hosts. 
+
+Please let me know if you are running things on linux and make github isseus for any problems. 
+I don't have a VR Linux setup to test against at the moment or plan on investing in getting it set up but if there's enough interest I would.
+
+An xcb equivalent for probing monitor's X offset might be needed, for now on non Windows platforms a default offset of 0 is used
 
 ### Build Instructions
 
