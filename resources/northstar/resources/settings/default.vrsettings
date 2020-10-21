@@ -12,11 +12,11 @@
     "useFakeWarp": false,
     "useFakeTracking": false,
     "useControllerDebugMode": false,
-    "shouldBlockStandbyMode": true,
+    "shouldBlockStandbyMode": true
   },
   "configuration": {
     "useRenderModel": true,
-    "enableControllers": true,
+    "enableControllers": true
   },
   "display": {
     "originX": -1,
