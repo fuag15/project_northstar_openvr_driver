@@ -3,16 +3,8 @@
 void northstar::driver::CWatchdog::ThreadFunction() {
     while (!m_bThreadShouldStop)
     {
-#if defined( _WINDOWS )
-        if ((0x01 & GetAsyncKeyState('Y')) != 0) {
-            vr::VRWatchdogHost()->WatchdogWakeUp();
-        }
-
-        std::this_thread::sleep_for(std::chrono::microseconds(500));
-#else
         std::this_thread::sleep_for(std::chrono::seconds(5));
-        vr::VRWatchdogHost()->WatchdogWakeUp();
-#endif
+        //vr::VRWatchdogHost()->WatchdogWakeUp();
     }
 }
 

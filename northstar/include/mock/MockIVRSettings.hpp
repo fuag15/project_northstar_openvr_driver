@@ -10,7 +10,6 @@ namespace northstar {
         class MockIVRSettings : public vr::IVRSettings {
         public:
             MAKE_MOCK1(GetSettingsErrorNameFromEnum, const char*( vr::EVRSettingsError eError ), override);
-            MAKE_MOCK2(Sync, bool( bool bForce, vr::EVRSettingsError *peError), override);
             MAKE_MOCK4(SetBool, void(const char* pchSection, const char* pchSettingsKey, bool bValue, vr::EVRSettingsError* peError), override);
             MAKE_MOCK4(SetInt32, void( const char *pchSection, const char *pchSettingsKey, int32_t nValue, vr::EVRSettingsError *peError ), override);
             MAKE_MOCK4(SetFloat, void( const char *pchSection, const char *pchSettingsKey, float flValue, vr::EVRSettingsError *peError ), override);
