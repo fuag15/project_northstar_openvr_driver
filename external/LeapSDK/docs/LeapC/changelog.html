@@ -42,7 +42,7 @@
   <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.0.0</span>
+   &#160;<span id="projectnumber">4.1.0</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -113,7 +113,8 @@ $(document).ready(function(){initNavTree('changelog.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#changelog_">Change log</a><ul><li class="level2"><a href="#version_4_0_0">Version 4.0.0</a></li>
+<ul><li class="level1"><a href="#changelog_">Change log</a><ul><li class="level2"><a href="#version_4_1_0">Version 4.1.0</a></li>
+<li class="level2"><a href="#version_4_0_0">Version 4.0.0</a></li>
 <li class="level2"><a href="#version_3_2_1">Version 3.2.1</a></li>
 <li class="level2"><a href="#version_3_2_0">Version 3.2.0</a></li>
 <li class="level2"><a href="#version_3_1_3">Version 3.1.3</a></li>
@@ -173,6 +174,17 @@ $(document).ready(function(){initNavTree('changelog.html','');});
 <div class="textblock"><h1><a class="anchor" id="changelog_"></a>
 Change log</h1>
 <p>Versions:</p>
+<h2><a class="anchor" id="version_4_1_0"></a>
+Version 4.1.0</h2>
+<ul>
+<li>Allow access to Leap Motion tracking data from UWP and AppContainer applications</li>
+<li>Control panel setting 'Allow Web Apps' persists</li>
+<li>Control panel setting 'Manual Orientation' Setting persists</li>
+<li>Fixed an intermittent crash of LeapSvc.exe during power cycle</li>
+<li>Fixed an issue where the SHA256 was not computed correctly on Intel Ice Lake CPUs</li>
+<li>Fixed an intermitted failure to detect RIGEL</li>
+<li>Fixed an issue during shutdown of LeapSvc, where shutdown requested within seconds after startup</li>
+</ul>
 <h2><a class="anchor" id="version_4_0_0"></a>
 Version 4.0.0</h2>
 <ul>
@@ -923,8 +935,8 @@ Version 0.6.0</h2>
 <li>Initial developer beta release of Leap Motion software and SDK. <hr/>
 </li>
 </ul>
-<p>Copyright © 2012-2014 Leap Motion, Inc. All rights reserved.</p>
-<p>Use of the Leap Motion SDK is subject to the terms of the Leap Motion SDK Agreement available at <a href="https://developer.leapmotion.com/sdk_agreement">https://developer.leapmotion.com/sdk_agreement</a>, or another agreement between Leap Motion and you, your company or other organization. </p>
+<p>Copyright © 2012-2020 Ultraleap Ltd. All rights reserved.</p>
+<p>Use of the Leap Motion SDK is subject to the terms of the Leap Motion SDK Agreement available at <a href="https://developer.leapmotion.com/sdk_agreement">https://developer.leapmotion.com/sdk_agreement</a>, or another agreement between Ultraleap Ltd. and you, your company or other organization. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.14-->
@@ -932,7 +944,7 @@ Version 0.6.0</h2>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="md_Leap_SDK_Release_Notes.html">Release Notes</a></li>
-    <li class="footer">Generated on Tue Dec 18 2018 18:17:19 for Leap Motion C API by
+    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

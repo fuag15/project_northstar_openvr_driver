@@ -63,7 +63,7 @@ extern "C" {
         RS2_OPTION_HOLES_FILL, /**< Enhance depth data post-processing with holes filling where appropriate*/
         RS2_OPTION_STEREO_BASELINE, /**< The distance in mm between the first and the second imagers in stereo-based depth cameras*/
         RS2_OPTION_AUTO_EXPOSURE_CONVERGE_STEP, /**< Allows dynamically ajust the converge step value of the target exposure in Auto-Exposure algorithm*/
-        RS2_OPTION_INTER_CAM_SYNC_MODE, /**< Impose Inter-camera HW synchronization mode. Applicable for D400/Rolling Shutter SKUs */
+        RS2_OPTION_INTER_CAM_SYNC_MODE, /**< Impose Inter-camera HW synchronization mode. Applicable for D400/L500/Rolling Shutter SKUs */
         RS2_OPTION_STREAM_FILTER, /**< Select a stream to process */
         RS2_OPTION_STREAM_FORMAT_FILTER, /**< Select a stream format to process */
         RS2_OPTION_STREAM_INDEX_FILTER, /**< Select a stream index to process */
@@ -92,6 +92,10 @@ extern "C" {
         RS2_OPTION_INVALIDATION_BYPASS, /**< Enable\disable pixel invalidation */
         RS2_OPTION_AMBIENT_LIGHT, /**< Change the depth ambient light see rs2_ambient_light for values */
         RS2_OPTION_SENSOR_MODE, /**< The resolution mode: see rs2_sensor_mode for values */
+        RS2_OPTION_EMITTER_ALWAYS_ON, /**< Enable Laser On constantly (GS SKU Only) */
+        RS2_OPTION_THERMAL_COMPENSATION, /**< Depth Thermal Compensation for selected D400 SKUs */
+        RS2_OPTION_TRIGGER_CAMERA_ACCURACY_HEALTH, /**< Enable depth & color frame sync with periodic calibration for proper alignment */
+        RS2_OPTION_RESET_CAMERA_ACCURACY_HEALTH,
         RS2_OPTION_COUNT /**< Number of enumeration values. Not a valid input: intended to be used in for-loops. */
     } rs2_option;
 
@@ -148,6 +152,7 @@ extern "C" {
     {
         RS2_SENSOR_MODE_VGA,
         RS2_SENSOR_MODE_XGA,
+        RS2_SENSOR_MODE_QVGA,
         RS2_SENSOR_MODE_COUNT /**< Number of enumeration values. Not a valid input: intended to be used in for-loops. */
     } rs2_sensor_mode;
     const char* rs2_sensor_mode_to_string(rs2_sensor_mode preset);
@@ -159,6 +164,16 @@ extern "C" {
         RS2_AMBIENT_LIGHT_LOW_AMBIENT = 2,
     } rs2_ambient_light;
     const char* rs2_ambient_light_to_string(rs2_ambient_light preset);
+
+    /** \brief values for RS2_OPTION_TRIGGER_CAMERA_ACCURACY_HEALTH option. */
+    typedef enum rs2_cah_trigger
+    {
+        RS2_CAH_TRIGGER_MANUAL = 0,  /**< not triggered until you give _NOW */
+        RS2_CAH_TRIGGER_NOW    = 1,  /**< triggers CAH and leaves previous value intact! */
+        RS2_CAH_TRIGGER_AUTO   = 2,  /**< triggered periodically or with certain conditions */
+        RS2_CAH_TRIGGER_COUNT        /**< Number of enumeration values. Not a valid input: intended to be used in for-loops. */
+    } rs2_cah_trigger;
+    const char* rs2_cah_trigger_to_string( rs2_cah_trigger preset );
 
     /**
     * check if an option is read-only

@@ -188,7 +188,6 @@ var group___structs =
       [ "connection_lost_event", "group___structs.html#a171f518851f1aee78fcc72d8fac9236b", null ],
       [ "device_event", "group___structs.html#aea76548f2dac77b8e260b8d8fa1a1620", null ],
       [ "device_failure_event", "group___structs.html#aca78798769c9b44ad3bca285a227d29e", null ],
-      [ "device_id", "group___structs.html#a174a8dfcaa91e88badb200fd1ceef87b", null ],
       [ "device_status_change_event", "group___structs.html#a42c9ce4baaf5fca8d903c91c4650dfc5", null ],
       [ "image_event", "group___structs.html#a7ff809c6575a6c3e1ba03e79565f2207", null ],
       [ "log_event", "group___structs.html#ad17c87db816af2e465d3db00f2987803", null ],

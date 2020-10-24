@@ -42,7 +42,7 @@
   <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.0.0</span>
+   &#160;<span id="projectnumber">4.1.0</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -303,17 +303,17 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>Specifies the configuration for a connection. </p>
-<dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
+<p>Currently, there are no externally useful configuration options. </p><dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h3>Data Fields</h3></td></tr>
 <tr class="memitem:a9550944dc1940d171812370d63d95da2"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___structs.html#a9550944dc1940d171812370d63d95da2">size</a></td></tr>
 <tr class="memdesc:a9550944dc1940d171812370d63d95da2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set to the final size of the structure.  <a href="#a9550944dc1940d171812370d63d95da2">More...</a><br /></td></tr>
 <tr class="separator:a9550944dc1940d171812370d63d95da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27ae9ec080c5b7a306ec849b0ad57ff8"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___structs.html#a27ae9ec080c5b7a306ec849b0ad57ff8">flags</a></td></tr>
-<tr class="memdesc:a27ae9ec080c5b7a306ec849b0ad57ff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">A combination of eLeapConnectionConfig flags.  <a href="#a27ae9ec080c5b7a306ec849b0ad57ff8">More...</a><br /></td></tr>
+<tr class="memdesc:a27ae9ec080c5b7a306ec849b0ad57ff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The connection configuration flags.  <a href="#a27ae9ec080c5b7a306ec849b0ad57ff8">More...</a><br /></td></tr>
 <tr class="separator:a27ae9ec080c5b7a306ec849b0ad57ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26b9a984be32eb62b694430baae382df"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___structs.html#a26b9a984be32eb62b694430baae382df">server_namespace</a></td></tr>
-<tr class="memdesc:a26b9a984be32eb62b694430baae382df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies the server namespace to be used.  <a href="#a26b9a984be32eb62b694430baae382df">More...</a><br /></td></tr>
+<tr class="memdesc:a26b9a984be32eb62b694430baae382df"><td class="mdescLeft">&#160;</td><td class="mdescRight">For internal use.  <a href="#a26b9a984be32eb62b694430baae382df">More...</a><br /></td></tr>
 <tr class="separator:a26b9a984be32eb62b694430baae382df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
@@ -327,8 +327,8 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A combination of eLeapConnectionConfig flags. </p>
-<p>Set to 0 to indicate no special flags. </p><dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
+<p>The connection configuration flags. </p>
+<p>(currently there are none. </p><dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
 
 </div>
 </div>
@@ -342,10 +342,8 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Specifies the server namespace to be used. </p>
-<p>Leave NULL to use the default namespace.</p>
-<p>It is possible to launch the service with a different IPC connection namespace (using internal service functions). Clients wishing to connect to a different server namespace may specify that namespace here.</p>
-<p>The default connection namespace is "Leap Service".For internal use. </p><dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
+<p>For internal use. </p>
+<dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
 
 </div>
 </div>
@@ -3040,9 +3038,6 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gr
 <tr class="memitem:abd1d69fa74111b40de77c699bf297f1d"><td class="memItemLeft" valign="top">};&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="memdesc:abd1d69fa74111b40de77c699bf297f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to the event data for the current type of message.  <a href="#abd1d69fa74111b40de77c699bf297f1d">More...</a><br /></td></tr>
 <tr class="separator:abd1d69fa74111b40de77c699bf297f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a174a8dfcaa91e88badb200fd1ceef87b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___structs.html#a174a8dfcaa91e88badb200fd1ceef87b">device_id</a></td></tr>
-<tr class="memdesc:a174a8dfcaa91e88badb200fd1ceef87b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A unique ID for the attached device that sent this message.  <a href="#a174a8dfcaa91e88badb200fd1ceef87b">More...</a><br /></td></tr>
-<tr class="separator:a174a8dfcaa91e88badb200fd1ceef87b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a class="anchor" id="abd1d69fa74111b40de77c699bf297f1d"></a>
@@ -3147,21 +3142,6 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gr
 
 <p>A device failure message. </p>
 <dl class="section since"><dt>Since</dt><dd>3.0.0 </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a174a8dfcaa91e88badb200fd1ceef87b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t LEAP_CONNECTION_MESSAGE::device_id</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>A unique ID for the attached device that sent this message. </p>
-<p>A value of 0 indicates that it was a system-wide message, and not device specific. Use this ID to distinguish messages sent from multiple attached devices. </p><dl class="section since"><dt>Since</dt><dd>4.0.1 </dd></dl>
 
 </div>
 </div>
@@ -3469,7 +3449,7 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gr
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Dec 18 2018 18:17:19 for Leap Motion C API by
+    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

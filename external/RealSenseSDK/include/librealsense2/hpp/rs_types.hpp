@@ -45,11 +45,25 @@ struct rs2_notifications_callback
 
 typedef void ( *log_callback_function_ptr )(rs2_log_severity severity, rs2_log_message const * msg );
 
+struct rs2_software_device_destruction_callback
+{
+    virtual void                            on_destruction() = 0;
+    virtual void                            release() = 0;
+    virtual                                 ~rs2_software_device_destruction_callback() {}
+};
+
 struct rs2_log_callback
 {
     virtual void                            on_log( rs2_log_severity severity, rs2_log_message const & msg ) noexcept = 0;
     virtual void                            release() = 0;
     virtual                                 ~rs2_log_callback() {}
+};
+
+struct rs2_calibration_change_callback
+{
+    virtual void                            on_calibration_change( rs2_calibration_status ) noexcept = 0;
+    virtual void                            release() = 0;
+    virtual                                 ~rs2_calibration_change_callback() {}
 };
 
 struct rs2_devices_changed_callback

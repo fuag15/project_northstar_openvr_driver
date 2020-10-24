@@ -5,16 +5,16 @@
 # PACKAGE_VERSION_COMPATIBLE if the current version is >= requested version,
 # but only if the requested major version is the same as the current one.
 
-set(PACKAGE_VERSION "4.0.0")
+set(PACKAGE_VERSION "4.1.0")
 
 if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)
   set(PACKAGE_VERSION_COMPATIBLE FALSE)
 else()
 
-  if("4.0.0" MATCHES "^([0-9]+)\\.")
+  if("4.1.0" MATCHES "^([0-9]+)\\.")
     set(LEAP_VERSION_MAJOR "${CMAKE_MATCH_1}")
   else()
-    set(LEAP_VERSION_MAJOR "4.0.0")
+    set(LEAP_VERSION_MAJOR "4.1.0")
   endif()
 
   if(PACKAGE_FIND_VERSION_MAJOR STREQUAL LEAP_VERSION_MAJOR)

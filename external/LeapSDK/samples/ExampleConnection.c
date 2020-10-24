@@ -1,9 +1,9 @@
 /******************************************************************************\
-* Copyright (C) 2012-2017 Leap Motion, Inc. All rights reserved.               *
-* Leap Motion proprietary and confidential. Not for distribution.              *
+* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
+* Ultraleap proprietary and confidential. Not for distribution.                *
 * Use subject to the terms of the Leap Motion SDK Agreement available at       *
 * https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Leap Motion and you, your company or other organization.             *
+* between Ultraleap and you, your company or other organization.               *
 \******************************************************************************/
 
 #include "ExampleConnection.h"
@@ -33,13 +33,11 @@ static void setFrame(const LEAP_TRACKING_EVENT *frame);
 static void setDevice(const LEAP_DEVICE_INFO *deviceProps);
 
 //External state
-LEAP_CONNECTION ConnectionHandle = NULL;
 bool IsConnected = false;
-uint32_t DeviceId = 0;
 
 //Internal state
 static volatile bool _isRunning = false;
-static LEAP_CONNECTION_CONFIG *lastConnectionConfig;
+static LEAP_CONNECTION connectionHandle = NULL;
 static LEAP_TRACKING_EVENT *lastFrame = NULL;
 static LEAP_DEVICE_INFO *lastDevice = NULL;
 
@@ -55,47 +53,17 @@ static pthread_t pollingThread;
 static pthread_mutex_t dataLock;
 #endif
 
-static bool connectionConfigEq(const LEAP_CONNECTION_CONFIG *connectionConfig1, const LEAP_CONNECTION_CONFIG *connectionConfig2) {
-  return connectionConfig1 == NULL ? connectionConfig2 == NULL : connectionConfig2 != NULL
-    && connectionConfig1->size == connectionConfig2->size
-    && !memcmp(connectionConfig1, connectionConfig2, connectionConfig1->size);
-}
-
 /**
-* Creates the connection handle and opens a connection to the Leap Motion
-* service with the default configuration. On success, creates a thread to
-* service the LeapC message pump and returns the connection handle.
-*/
-LEAP_CONNECTION* OpenConnection() {
-  return OpenConnectionWithConfig(NULL);
-}
-
-/**
-* Creates the connection handle and opens a connection to the Leap Motion
-* service with the specified configuration. On success, creates a thread to
-* service the LeapC message pump and returns the connection handle.
-*/
-LEAP_CONNECTION* OpenConnectionWithConfig(const LEAP_CONNECTION_CONFIG *connectionConfig) {
-  if (connectionConfigEq(connectionConfig, lastConnectionConfig)) {
-    if (_isRunning) {
-      return &ConnectionHandle;
-    }
-  } else {
-    DestroyConnection();
-    LEAP_CONNECTION_CONFIG *newConnectionConfig = NULL;
-    if (connectionConfig) {
-      newConnectionConfig = realloc(lastConnectionConfig, connectionConfig->size);
-    }
-    if (newConnectionConfig == NULL) {
-      free(lastConnectionConfig);
-    } else {
-      memcpy(newConnectionConfig, connectionConfig, connectionConfig->size);
-    }
-    lastConnectionConfig = newConnectionConfig;
+ * Creates the connection handle and opens a connection to the Leap Motion
+ * service. On success, creates a thread to service the LeapC message pump.
+ */
+LEAP_CONNECTION* OpenConnection(){
+  if(_isRunning){
+    return &connectionHandle;
   }
-  if (ConnectionHandle || LeapCreateConnection(connectionConfig, &ConnectionHandle) == eLeapRS_Success) {
-    eLeapRS result = LeapOpenConnection(ConnectionHandle);
-    if (result == eLeapRS_Success) {
+  if(connectionHandle || LeapCreateConnection(NULL, &connectionHandle) == eLeapRS_Success){
+    eLeapRS result = LeapOpenConnection(connectionHandle);
+    if(result == eLeapRS_Success){
       _isRunning = true;
 #if defined(_MSC_VER)
       InitializeCriticalSection(&dataLock);
@@ -105,31 +73,33 @@ LEAP_CONNECTION* OpenConnectionWithConfig(const LEAP_CONNECTION_CONFIG *connecti
 #endif
     }
   }
-  return &ConnectionHandle;
+  return &connectionHandle;
 }
 
-/** Close but don't destroy the connection and let message thread function end. */
 void CloseConnection(){
   if(!_isRunning){
     return;
   }
   _isRunning = false;
-  LeapCloseConnection(ConnectionHandle);
+  LeapCloseConnection(connectionHandle);
 #if defined(_MSC_VER)
   WaitForSingleObject(pollingThread, INFINITE);
-  // handle automatically closed when polling thread exits?
-  //CloseHandle(pollingThread);
+  CloseHandle(pollingThread);
 #else
   pthread_join(pollingThread, NULL);
 #endif
-  IsConnected = false;
 }
 
-/** Close and destroy the connection and let message thread function end. */
 void DestroyConnection(){
   CloseConnection();
-  LeapDestroyConnection(ConnectionHandle);
-  ConnectionHandle = NULL;
+  LeapDestroyConnection(connectionHandle);
+}
+
+
+/** Close the connection and let message thread function end. */
+void CloseConnectionHandle(LEAP_CONNECTION* connectionHandle){
+  LeapDestroyConnection(*connectionHandle);
+  _isRunning = false;
 }
 
 /** Called by serviceMessageLoop() when a connection event is returned by LeapPollConnection(). */
@@ -182,7 +152,7 @@ static void handleDeviceEvent(const LEAP_DEVICE_EVENT *device_event){
   }
   setDevice(&deviceProperties);
   if(ConnectionCallbacks.on_device_found){
-    ConnectionCallbacks.on_device_found(&deviceProperties, deviceHandle);
+    ConnectionCallbacks.on_device_found(&deviceProperties);
   }
 
   free(deviceProperties.serial);
@@ -218,7 +188,7 @@ static void handleLogEvent(const LEAP_LOG_EVENT *log_event){
   }
 }
 
-/** Called by serviceMessageLoop() when log events are returned by LeapPollConnection(). */
+/** Called by serviceMessageLoop() when a log event is returned by LeapPollConnection(). */
 static void handleLogEvents(const LEAP_LOG_EVENTS *log_events){
   if(ConnectionCallbacks.on_log_message){
     for (int i = 0; i < (int)(log_events->nEvents); i++) {
@@ -249,21 +219,7 @@ static void handleConfigResponseEvent(const LEAP_CONFIG_RESPONSE_EVENT *config_r
   }
 }
 
-/** Called by serviceMessageLoop() when a device status change event is returned by LeapPollConnection(). */
-static void handleDeviceStatusChangeEvent(const LEAP_DEVICE_STATUS_CHANGE_EVENT *device_status_change_event) {
-  if (ConnectionCallbacks.on_device_status_change) {
-    ConnectionCallbacks.on_device_status_change(device_status_change_event->device, device_status_change_event->last_status, device_status_change_event->status);
-  }
-}
-
-/** Called by serviceMessageLoop() when a dropped frame event is returned by LeapPollConnection(). */
-static void handleDroppedFrameEvent(const LEAP_DROPPED_FRAME_EVENT *dropped_frame_event) {
-  if (ConnectionCallbacks.on_dropped_frame) {
-    ConnectionCallbacks.on_dropped_frame(dropped_frame_event->frame_id, dropped_frame_event->type);
-  }
-}
-
-/** Called by serviceMessageLoop() when an image event is returned by LeapPollConnection(). */
+/** Called by serviceMessageLoop() when a point mapping change event is returned by LeapPollConnection(). */
 static void handleImageEvent(const LEAP_IMAGE_EVENT *image_event) {
   if(ConnectionCallbacks.on_image){
     ConnectionCallbacks.on_image(image_event);
@@ -277,7 +233,7 @@ static void handlePointMappingChangeEvent(const LEAP_POINT_MAPPING_CHANGE_EVENT 
   }
 }
 
-/** Called by serviceMessageLoop() when a head pose event is returned by LeapPollConnection(). */
+/** Called by serviceMessageLoop() when a point mapping change event is returned by LeapPollConnection(). */
 static void handleHeadPoseEvent(const LEAP_HEAD_POSE_EVENT *head_pose_event) {
     if(ConnectionCallbacks.on_head_pose){
       ConnectionCallbacks.on_head_pose(head_pose_event);
@@ -297,14 +253,12 @@ static void* serviceMessageLoop(void * unused){
   LEAP_CONNECTION_MESSAGE msg;
   while(_isRunning){
     unsigned int timeout = 1000;
-    result = LeapPollConnection(ConnectionHandle, timeout, &msg);
+    result = LeapPollConnection(connectionHandle, timeout, &msg);
 
     if(result != eLeapRS_Success){
       printf("LeapC PollConnection call was %s.\n", ResultString(result));
       continue;
     }
-
-    DeviceId = msg.device_id;
 
     switch (msg.type){
       case eLeapEventType_Connection:
@@ -342,12 +296,6 @@ static void* serviceMessageLoop(void * unused){
         break;
       case eLeapEventType_ConfigResponse:
         handleConfigResponseEvent(msg.config_response_event);
-        break;
-      case eLeapEventType_DeviceStatusChange:
-        handleDeviceStatusChangeEvent(msg.device_status_change_event);
-        break;
-      case eLeapEventType_DroppedFrame:
-        handleDroppedFrameEvent(msg.dropped_frame_event);
         break;
       case eLeapEventType_Image:
         handleImageEvent(msg.image_event);

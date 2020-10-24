@@ -457,7 +457,7 @@ namespace rs2
         * In case the frame metadata is not configured:
         *   -   The function call provides the TIME_OF_ARRIVAL stamp.
         * In case the metadata is available the function returns:
-        *   -   `HW Timestamp` (SENSOR_TIMESTAMP), or
+        *   -   `HW Timestamp` (FRAME_TIMESTAMP), or
         *   -   `Global Timestamp`  Host-corrected derivative of `HW Timestamp` required for multi-sensor/device synchronization
         *   -   The user can select between the unmodified and the host-calculated Hardware Timestamp by toggling
         *       the `RS2_OPTION_GLOBAL_TIME_ENABLED` option.
@@ -812,6 +812,18 @@ namespace rs2
             rs2_error * e = nullptr;
             auto r = rs2_depth_frame_get_distance(get(), x, y, &e);
             error::handle(e);
+            return r;
+        }
+
+        /**
+        * Provide the scaling factor to use when converting from get_data() units to meters
+        * \return float - depth, in meters, per 1 unit stored in the frame data
+        */
+        float get_units() const
+        {
+            rs2_error * e = nullptr;
+            auto r = rs2_depth_frame_get_units( get(), &e );
+            error::handle( e );
             return r;
         }
     };

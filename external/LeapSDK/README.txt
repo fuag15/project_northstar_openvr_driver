@@ -29,7 +29,7 @@ Usage:
     - directly set LeapSDK_DIR to <install_dir>/LeapSDK/lib/cmake/LeapSDK
       - or -
     - Pass the LeapSDK's path to find_package with the PATHS option.
-    - call find_package(LeapSDK 4.0 [PATHS ...]).
+    - call find_package(LeapSDK 4.1 [PATHS ...]).
     - call target_link_libraries(<your project> PUBLIC|PRIVATE LeapSDK::LeapC).
     - Ensure LeapC.dll is in your dynamic library search path.
       - A popular option is to add a post-build step that copies it to your
@@ -57,7 +57,7 @@ Resources:
   3. C++ bindings matching the old API (https://github.com/leapmotion/LeapCxx)
 
 --------------------------------------------------------------------------------
-Copyright © 2012-2018 Leap Motion, Inc. All rights reserved.
+Copyright © 2012-2018 Ultraleap Ltd. All rights reserved.
 
 Use subject to the terms of the Leap Motion SDK Agreement available at
 https://developer.leapmotion.com/sdk_agreement.

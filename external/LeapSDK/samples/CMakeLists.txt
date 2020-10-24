@@ -9,7 +9,7 @@ if(WIN32)
   endif()
 endif()
 
-find_package(LeapSDK 4.0.0 PATHS "${CMAKE_CURRENT_LIST_DIR}/..")
+find_package(LeapSDK 4.1.0 PATHS "${CMAKE_CURRENT_LIST_DIR}/..")
 
 function(c_sample_executable NAME)
   add_executable(${NAME} ${NAME}.c ExampleConnection.c ExampleConnection.h ${ARGN})

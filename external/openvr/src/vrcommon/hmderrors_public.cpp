@@ -81,6 +81,8 @@ const char *GetEnglishStringForHmdError( vr::EVRInitError eError )
 	case VRInitError_IPC_CompositorConnectFailed:				return "Shared IPC Compositor Connect Failed (306)";
 	case VRInitError_IPC_CompositorInvalidConnectResponse:		return "Shared IPC Compositor Invalid Connect Response (307)";
 	case VRInitError_IPC_ConnectFailedAfterMultipleAttempts:	return "Shared IPC Connect Failed After Multiple Attempts (308)";
+	case VRInitError_IPC_ConnectFailedAfterTargetExited:		return "Shared IPC Connect Failed After Target Exited (309)";
+	case VRInitError_IPC_NamespaceUnavailable:					return "Shared IPC Namespace Unavailable (310)";
 
 	case VRInitError_Compositor_Failed:					return "Compositor failed to initialize (400)";
 	case VRInitError_Compositor_D3D11HardwareRequired:	return "Compositor failed to find DX11 hardware (401)";
@@ -91,6 +93,7 @@ const char *GetEnglishStringForHmdError( vr::EVRInitError eError )
 
 	// Oculus
 	case VRInitError_VendorSpecific_UnableToConnectToOculusRuntime:	return "Unable to connect to Oculus Runtime (1000)";
+	case VRInitError_VendorSpecific_OculusRuntimeBadInstall:		return "Unable to connect to Oculus Runtime, possible bad install (1114)";
 
 	// Lighthouse
 	case VRInitError_VendorSpecific_HmdFound_CantOpenDevice:				return "HMD found, but can not open device (1101)";
@@ -168,7 +171,9 @@ const char *GetIDForVRInitError( vr::EVRInitError eError )
 		RETURN_ENUM_AS_STRING( VRInitError_Init_TrackerManagerInitFailed );
 		RETURN_ENUM_AS_STRING( VRInitError_Init_AlreadyRunning );
 		RETURN_ENUM_AS_STRING( VRInitError_Init_FailedForVrMonitor);
-
+		RETURN_ENUM_AS_STRING( VRInitError_Init_PropertyManagerInitFailed );
+		RETURN_ENUM_AS_STRING( VRInitError_Init_WebServerFailed );
+		
 		RETURN_ENUM_AS_STRING( VRInitError_Driver_Failed );
 		RETURN_ENUM_AS_STRING( VRInitError_Driver_Unknown );
 		RETURN_ENUM_AS_STRING( VRInitError_Driver_HmdUnknown);
@@ -192,7 +197,9 @@ const char *GetIDForVRInitError( vr::EVRInitError eError )
 		RETURN_ENUM_AS_STRING( VRInitError_IPC_Failed);
 		RETURN_ENUM_AS_STRING( VRInitError_IPC_CompositorConnectFailed);
 		RETURN_ENUM_AS_STRING( VRInitError_IPC_CompositorInvalidConnectResponse);
-		RETURN_ENUM_AS_STRING( VRInitError_IPC_ConnectFailedAfterMultipleAttempts);
+		RETURN_ENUM_AS_STRING( VRInitError_IPC_ConnectFailedAfterMultipleAttempts );
+		RETURN_ENUM_AS_STRING( VRInitError_IPC_ConnectFailedAfterTargetExited );
+		RETURN_ENUM_AS_STRING( VRInitError_IPC_NamespaceUnavailable );
 
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_Failed );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_D3D11HardwareRequired );
@@ -274,15 +281,22 @@ const char *GetIDForVRInitError( vr::EVRInitError eError )
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateFallbackSyncTexture );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_ShareFallbackSyncTexture );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateOverlayIndexBuffer );
-		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateOverlayVertextBuffer );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateOverlayVertexBuffer );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateTextVertexBuffer );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateTextIndexBuffer );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateMirrorTextures );
 		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateLastFrameRenderTexture );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateMirrorOverlay );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_FailedToCreateVirtualDisplayBackbuffer );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_DisplayModeNotSupported );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateOverlayInvalidCall );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_CreateOverlayAlreadyInitialized );
+		RETURN_ENUM_AS_STRING( VRInitError_Compositor_FailedToCreateMailbox );
 
 		// Vendor-specific errors
 		RETURN_ENUM_AS_STRING( VRInitError_VendorSpecific_UnableToConnectToOculusRuntime);
 		RETURN_ENUM_AS_STRING( VRInitError_VendorSpecific_WindowsNotInDevMode );
+		RETURN_ENUM_AS_STRING( VRInitError_VendorSpecific_OculusRuntimeBadInstall );
 
 		// Lighthouse
 		RETURN_ENUM_AS_STRING( VRInitError_VendorSpecific_HmdFound_CantOpenDevice);

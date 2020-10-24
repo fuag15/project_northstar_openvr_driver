@@ -11,8 +11,6 @@ var searchData=
   ['eleapallocatortype_5fuint32',['eLeapAllocatorType_UInt32',['../group___enum.html#gga4ef8bec6852369fbf3dcd97906d0a9faa62de15a99d0ff696906a94fa3150c53e',1,'LeapC.h']]],
   ['eleapallocatortype_5fuint64',['eLeapAllocatorType_UInt64',['../group___enum.html#gga4ef8bec6852369fbf3dcd97906d0a9faaff3c680e647ecbfef90a117757960bde',1,'LeapC.h']]],
   ['eleapallocatortype_5fuint8',['eLeapAllocatorType_Uint8',['../group___enum.html#gga4ef8bec6852369fbf3dcd97906d0a9faa71c4551b5660bbab5a8a899995de9911',1,'LeapC.h']]],
-  ['eleapconnectionconfig',['eLeapConnectionConfig',['../group___enum.html#gac8dfc841e612e22cfbe9a70dbcb7a4b4',1,'LeapC.h']]],
-  ['eleapconnectionconfig_5fmultideviceaware',['eLeapConnectionConfig_MultiDeviceAware',['../group___enum.html#ggac8dfc841e612e22cfbe9a70dbcb7a4b4adf4737262048bb59305be582eac58612',1,'LeapC.h']]],
   ['eleapdevicecaps',['eLeapDeviceCaps',['../group___enum.html#ga5d5cfae19b88160a1a5c14cc46faf435',1,'LeapC.h']]],
   ['eleapdevicecaps_5fcolor',['eLeapDeviceCaps_Color',['../group___enum.html#gga5d5cfae19b88160a1a5c14cc46faf435a48b65cc01a5bcafb09a0adfc4189c529',1,'LeapC.h']]],
   ['eleapdevicepid',['eLeapDevicePID',['../group___enum.html#ga5ed369865afe29bdadc65c450eb44c75',1,'LeapC.h']]],

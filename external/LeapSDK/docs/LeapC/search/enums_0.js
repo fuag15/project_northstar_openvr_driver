@@ -1,7 +1,6 @@
 var searchData=
 [
   ['eleapallocatortype',['eLeapAllocatorType',['../group___enum.html#ga4ef8bec6852369fbf3dcd97906d0a9fa',1,'LeapC.h']]],
-  ['eleapconnectionconfig',['eLeapConnectionConfig',['../group___enum.html#gac8dfc841e612e22cfbe9a70dbcb7a4b4',1,'LeapC.h']]],
   ['eleapdevicecaps',['eLeapDeviceCaps',['../group___enum.html#ga5d5cfae19b88160a1a5c14cc46faf435',1,'LeapC.h']]],
   ['eleapdevicepid',['eLeapDevicePID',['../group___enum.html#ga5ed369865afe29bdadc65c450eb44c75',1,'LeapC.h']]],
   ['eleapdevicestatus',['eLeapDeviceStatus',['../group___enum.html#ga1d2b70b83923751202242cbfcf56072b',1,'LeapC.h']]],

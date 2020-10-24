@@ -61,6 +61,7 @@ typedef enum rs2_frame_metadata_value
     RS2_FRAME_METADATA_FRAME_EMITTER_MODE                   , /**< Emitter mode: 0 - all emitters disabled. 1 - laser enabled. 2 - auto laser enabled (opt). 3 - LED enabled (opt).*/
     RS2_FRAME_METADATA_FRAME_LED_POWER                      , /**< Led power value 0-360. */
     RS2_FRAME_METADATA_RAW_FRAME_SIZE                       , /**< The number of transmitted payload bytes, not including metadata */
+    RS2_FRAME_METADATA_GPIO_INPUT_DATA                      , /**< GPIO input data */
     RS2_FRAME_METADATA_COUNT
 } rs2_frame_metadata_value;
 const char* rs2_frame_metadata_to_string(rs2_frame_metadata_value metadata);
@@ -149,6 +150,12 @@ int rs2_get_frame_width(const rs2_frame* frame, rs2_error** error);
 * \return               frame height in pixels
 */
 int rs2_get_frame_height(const rs2_frame* frame, rs2_error** error);
+
+/**
+* retrieve the scaling factor to use when converting a depth frame's get_data() units to meters
+* \return float - depth, in meters, per 1 unit stored in the frame data
+*/
+float rs2_depth_frame_get_units( const rs2_frame* frame, rs2_error** error );
 
 /**
 * retrieve frame stride in bytes (number of bytes from start of line N to start of line N+1)

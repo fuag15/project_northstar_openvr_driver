@@ -12,9 +12,6 @@ var group___enum =
       [ "eLeapAllocatorType_UInt64", "group___enum.html#gga4ef8bec6852369fbf3dcd97906d0a9faaff3c680e647ecbfef90a117757960bde", null ],
       [ "eLeapAllocatorType_Double", "group___enum.html#gga4ef8bec6852369fbf3dcd97906d0a9faadfc92d90851b21df4df512c6b6e2196d", null ]
     ] ],
-    [ "eLeapConnectionConfig", "group___enum.html#gac8dfc841e612e22cfbe9a70dbcb7a4b4", [
-      [ "eLeapConnectionConfig_MultiDeviceAware", "group___enum.html#ggac8dfc841e612e22cfbe9a70dbcb7a4b4adf4737262048bb59305be582eac58612", null ]
-    ] ],
     [ "eLeapDeviceCaps", "group___enum.html#ga5d5cfae19b88160a1a5c14cc46faf435", [
       [ "eLeapDeviceCaps_Color", "group___enum.html#gga5d5cfae19b88160a1a5c14cc46faf435a48b65cc01a5bcafb09a0adfc4189c529", null ]
     ] ],

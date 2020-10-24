@@ -42,7 +42,7 @@
   <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.0.0</span>
+   &#160;<span id="projectnumber">4.1.0</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -129,31 +129,24 @@ $(document).ready(function(){initNavTree('md_Leap_SDK_Release_Notes.html','');})
 </div>
 <div class="textblock"><h1><a class="anchor" id="releasenotes"></a>
 Release Notes</h1>
-<p><em>Version 4.0.0 Orion</em></p>
+<p><em>Version 4.1.0 Orion</em></p>
 <p>Topics:</p>
 <p><a class="el" href="changelog.html">Change log</a></p>
 <h2><a class="anchor" id="whatsnew"></a>
 What's New</h2>
 <ul>
-<li>Greater finger dexterity and fingertip precision</li>
-<li>Better hand pose stability and reliability</li>
-<li>Faster and more consistent initialization</li>
-<li>Smoother hand and finger movements</li>
-<li>Improved tracking fidelity on backgrounds and bright lighting</li>
-<li>More accurate shape and scale for hands</li>
-<li>Significantly improved performance on embedded “Rigel” devices</li>
-<li>LeapC is now the officially supported API included in the SDK. LeapAPI has been deprecated</li>
-<li>Changed the fingertip location in LeapC applications such that the point defines the center of a sphere whose edge is at the fingertip. Previous output was defined such that the point was at the edge of the fingertip</li>
-<li>Removed <code>LeapCSharp</code> and associated functionality from the SDK. It can now be found as part of <a href="https://github.com/leapmotion/unitymodules">UnityModules</a></li>
-<li>Removed Leap.dll, all associated language bindings (LeapPython, LeapJava, Objective-C) and samples</li>
-<li>Added a feature that pauses the device when no clients are connected (note: the Leap Control Panel is a client)</li>
-<li>LeapC makefile now generates all the samples correctly</li>
-<li>Fixed a hang at service shutdown</li>
-<li>Fixed an issue where hands could initialize on top of other hands</li>
+<li>Allow access to Leap Motion tracking data from UWP and AppContainer applications</li>
+<li>Control panel setting 'Allow Web Apps' persists</li>
+<li>Control panel setting 'Manual Orientation' Setting persists</li>
+<li>Fixed an intermittent crash of LeapSvc.exe during power cycle</li>
+<li>Fixed an issue where the SHA256 was not computed correctly on Intel Ice Lake CPUs</li>
+<li>Fixed an intermitted failure to detect Rigel/SIR170</li>
+<li>Fixed an issue during shutdown of LeapSvc, where shutdown requested within seconds after startup</li>
 </ul>
 <h2><a class="anchor" id="knownissues"></a>
 Known issues</h2>
 <ul>
+<li>Automatic Orientation does not work for Rigel/SIR170</li>
 <li>As of 4.0.0 our Windows service is now 64bit only along with the other applications we include in the installer</li>
 <li>Legacy applications that support Gestures, Motions, Tools, Pointables and Tip Velocity are no longer supported on Orion</li>
 <li>Leap Motion Service uses more CPU resources to provide a better tracking experience</li>
@@ -235,7 +228,7 @@ Troubleshooting</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Dec 18 2018 18:17:19 for Leap Motion C API by
+    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

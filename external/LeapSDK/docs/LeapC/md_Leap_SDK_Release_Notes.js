@@ -14,6 +14,7 @@ var md_Leap_SDK_Release_Notes =
     ] ],
     [ "Change log", "changelog.html", [
       [ "Change log", "changelog.html#changelog_", [
+        [ "Version 4.1.0", "changelog.html#version_4_1_0", null ],
         [ "Version 4.0.0", "changelog.html#version_4_0_0", null ],
         [ "Version 3.2.1", "changelog.html#version_3_2_1", null ],
         [ "Version 3.2.0", "changelog.html#version_3_2_0", null ],

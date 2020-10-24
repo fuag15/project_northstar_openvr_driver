@@ -3,7 +3,7 @@
 //  LeapCClient
 //
 //  Created by Joe Ward on 6/8/16.
-//  Copyright © 2012-2017 Leap Motion. All rights reserved.
+//  Copyright © 2012-2017 Ultraleap Ltd. All rights reserved.
 //
 
 #include "GLutils.h"

@@ -1,9 +1,9 @@
 /******************************************************************************\
-* Copyright (C) 2012-2017 Leap Motion, Inc. All rights reserved.               *
-* Leap Motion proprietary and confidential. Not for distribution.              *
+* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
+* Ultraleap proprietary and confidential. Not for distribution.                *
 * Use subject to the terms of the Leap Motion SDK Agreement available at       *
 * https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Leap Motion and you, your company or other organization.             *
+* between Ultraleap and you, your company or other organization.               *
 \******************************************************************************/
 
 #undef __cplusplus
@@ -21,7 +21,7 @@ static void OnConnect(){
 }
 
 /** Callback for when a device is found. */
-static void OnDevice(const LEAP_DEVICE_INFO *props, const LEAP_DEVICE device){
+static void OnDevice(const LEAP_DEVICE_INFO *props){
   printf("Found device %s.\n", props->serial);
 }
 
