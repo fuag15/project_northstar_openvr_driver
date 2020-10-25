@@ -83,13 +83,6 @@ add_custom_command(TARGET northstar_tests
 add_custom_command(TARGET northstar_tests
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${OPENVR_IMPLEMENTATION_DIR}/openvr_api.dll
-    $<TARGET_FILE_DIR:northstar_tests>
-)
-
-add_custom_command(TARGET northstar_tests
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${LEAPSDK_IMPLEMENTATION_DIR}/x64/LeapC.dll
     $<TARGET_FILE_DIR:northstar_tests>
 )

@@ -47,10 +47,12 @@ TEST_SUITE("HMD") {
     auto pMockOptics = std::make_shared<MockIOptics>();
     auto pMockHostProber = std::make_shared<MockIHostProber>();
     auto pMockSensorFrameCoordinator = std::make_shared<MockISensorFrameCoordinator>();
+    float fFakeGetBool = false;
     float fFakeGetFloat = 1.0f;
     uint32_t iFakeGetInt = 1;
 
     ALLOW_CALL(*pMockSensorFrameCoordinator, SubmitOpenVRHeadsetPose(_));
+    ALLOW_CALL(*pMockIVRSettings, GetBool(_, _, _)).RETURN(fFakeGetBool);
     ALLOW_CALL(*pMockIVRSettings, GetFloat(_, _, _)).RETURN(fFakeGetFloat);
     ALLOW_CALL(*pMockIVRSettings, GetInt32(_, _, _)).RETURN(iFakeGetInt);
     ALLOW_CALL(*pMockIVRSettings, SetFloat(_, _, _, _));

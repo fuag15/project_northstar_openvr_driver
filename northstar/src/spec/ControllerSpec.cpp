@@ -66,11 +66,13 @@ TEST_SUITE("CController") {
         auto spMockVRServerDriverHost = std::make_shared<MockIVRServerDriverHost>();
         auto spMockVRDriverInput = std::make_shared<MockIVRDriverInput>();
 
+        ALLOW_CALL(*spMockVRSettings, GetBool(_, _, _)).RETURN(false);
         ALLOW_CALL(*spMockVRSettings, GetFloat(_, _, _)).RETURN(1.0);
         ALLOW_CALL(*spMockVRProperties, SetStringProperty(_, _, _)).RETURN(vr::ETrackedPropertyError::TrackedProp_Success);
         ALLOW_CALL(*spMockVRProperties, SetInt32Property(_, _, _)).RETURN(vr::ETrackedPropertyError::TrackedProp_Success);
         ALLOW_CALL(*spMockVRProperties, SetUint64Property(_, _, _)).RETURN(vr::ETrackedPropertyError::TrackedProp_Success);
         ALLOW_CALL(*spMockVRProperties, TrackedDeviceToPropertyContainer(_)).RETURN(1);
+        ALLOW_CALL(*spMockVRDriverInput, CreateScalarComponent(_, _, _, _, _)).RETURN(vr::VRInputError_None);
         ALLOW_CALL(*spMockVRDriverInput, CreateBooleanComponent(_, _, _)).RETURN(vr::VRInputError_None);
         ALLOW_CALL(*spMockVRDriverInput, UpdateBooleanComponent(_, _, _)).RETURN(vr::VRInputError_None);
         ALLOW_CALL(*spMockVRDriverInput, CreateSkeletonComponent(_, _, _, _, _, _, _, _)).RETURN(vr::VRInputError_None);
