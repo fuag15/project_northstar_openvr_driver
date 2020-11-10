@@ -15,9 +15,9 @@
 
 namespace northstar {
     namespace driver {
-        class COptics : public IOptics {
+        class C3DCalibratedOptics : public IOptics {
         public:
-            COptics(
+            C3DCalibratedOptics(
                 vr::IVRSettings* pVRSettings,
                 std::shared_ptr<northstar::math::IWorldAdapter> pWorldAdapter,
                 std::shared_ptr<northstar::math::ISpaceAdapter> pSpaceAdapter,
@@ -37,17 +37,12 @@ namespace northstar {
             static constexpr double x_dIterativeSolverGradiantEpsilon = 0.0001;
             static constexpr double x_dIterativeSolverStepWeight = 1.0 / 7.0;
 
-            enum class ETargetConfigurationData {
-                TwoDee,
-                ThreeDee,
-            };
-
             struct SEllipsisAxis {
                 double dMinor;
                 double dMajor;
             };
 
-            struct SEyeConfiguration3D {
+            struct SEyeConfiguration {
                 SEllipsisAxis sEllipsisAxis = { 0 };
                 northstar::math::types::Vector3d v3dScreenForward;
                 northstar::math::types::Vector3d v3dScreenPosition;
@@ -61,25 +56,12 @@ namespace northstar {
                 northstar::math::types::ProjMatrix4d m4dClipToWorld;
             };
 
-            struct SEyeConfiguration2D {
-                float baseline = 0;
-                std::array<float, 16> UVToRectilinearXAxisCoefficients = { 0 };
-                std::array<float, 16> UVToRectilinearYAxisCoefficients = { 0 };
-                northstar::math::types::ProjMatrix4d m4dCameraProjection;
-            };
-
             typedef std::unordered_map<
                 northstar::math::types::Vector2d,
                 northstar::math::types::Vector2d,
                 northstar::math::types::SHasher<northstar::math::types::Vector2d>> UVWarpMap;
 
-            ETargetConfigurationData DetermineTargetConfigurationType();
-            SEyeConfiguration3D Load3DConfigFromEye(const vr::EVREye& eEye);
-            SEyeConfiguration2D Load2DConfigFromEye(const vr::EVREye& eEye);
-            virtual northstar::math::types::Vector2d EyeUVToScreenUVVia2DConfiguration(const vr::EVREye& eEye, const northstar::math::types::Vector2d& v2dEyeUV);
-            virtual northstar::math::types::Vector4d GetEyeProjectionLRTBVia2DConfiguration(const vr::EVREye& eEye);
-            virtual northstar::math::types::Vector2d EyeUVToScreenUVVia3DConfiguration(const vr::EVREye& eEye, const northstar::math::types::Vector2d& v2dEyeUV);
-            virtual northstar::math::types::Vector4d GetEyeProjectionLRTBVia3DConfiguration(const vr::EVREye& eEye);
+            SEyeConfiguration LoadConfigFromEye(const vr::EVREye& eEye);
             northstar::math::types::Vector2d ReverseProjectEyeUVToDisplayUV(const vr::EVREye& eEye, const northstar::math::types::Vector2d& v2dTargetEyeUV);
             northstar::math::types::Vector2d IterativeGradientUVWarpSolve(const vr::EVREye& eEye, const northstar::math::types::Vector2d& v2dEyeUV, const northstar::math::types::Vector2d& v2dWarpUVGuess);
 
@@ -90,10 +72,8 @@ namespace northstar {
             std::shared_ptr<northstar::math::IWorldAdapter> m_pWorldAdapter;
             std::shared_ptr<northstar::math::ISpaceAdapter> m_pSpaceAdapter;
             std::shared_ptr<northstar::utility::ILogger> m_pLogger;
-            std::unordered_map<vr::EVREye, SEyeConfiguration3D> m_umEyeConfigs3D;
-            std::unordered_map<vr::EVREye, SEyeConfiguration2D> m_umEyeConfigs2D;
+            std::unordered_map<vr::EVREye, SEyeConfiguration> m_umEyeConfigs;
             std::unordered_map<vr::EVREye, UVWarpMap> m_umUVWarps;
-            ETargetConfigurationData m_eTargetConfigurationData;
         };
     }
 }

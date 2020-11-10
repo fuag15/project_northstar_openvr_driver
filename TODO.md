@@ -1,6 +1,9 @@
 # Immediate Goals
-- Windows Installer and github release packaging
-- linux build
+- New Configuration method
+    - fill out 2D classes solve
+    - add appropriate tests for public 2d support methods
+    - sanity check with fake window
+    - get build over to test
 
 # General Polish
 - Test clean up (add tests to account for default poses)

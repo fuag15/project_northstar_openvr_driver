@@ -12,7 +12,7 @@
 #include "mock/MockISpaceAdapter.hpp"
 #include "mock/MockIVRSettings.hpp"
 #include "mock/MockILogger.hpp"
-#include "driver/Optics.hpp"
+#include "driver/3DCalibratedOptics.hpp"
 #include "driver/Settings.hpp"
 #include "utility/Test.hpp"
 
@@ -24,7 +24,7 @@ using namespace northstar::driver::settings::keys;
 using namespace northstar::test::utils;
 using namespace northstar::math::types;
 
-TEST_SUITE("Optics") {
+TEST_SUITE("3DCalibratedOptics") {
     SCENARIO("Should provide eye projection information") {
         auto pMockVectorFactory = std::make_shared<northstar::math::MockIVectorFactory>();
         auto pMockMatrixFactory = std::make_shared<northstar::math::MockIMatrixFactory>();
@@ -49,7 +49,7 @@ TEST_SUITE("Optics") {
             ANY(const double&)))
             .RETURN(ProjMatrix4d::Identity());
 
-        auto Subject = northstar::driver::COptics(
+        auto Subject = northstar::driver::C3DCalibratedOptics(
             pMockVRSettings.get(),
             pMockWorldAdapter,
             pMockSpaceAdapter,

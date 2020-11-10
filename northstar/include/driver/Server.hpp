@@ -4,7 +4,9 @@
 
 #include "driver/HMD.hpp"
 #include "driver/Controller.hpp"
-#include "driver/Optics.hpp"
+#include "driver/3DCalibratedOptics.hpp"
+#include "driver/2DCalibratedOptics.hpp"
+#include "driver/IOptics.hpp"
 #include "driver/SensorFrameCoordinator.hpp"
 #include "driver/LeapMotion.hpp"
 #include "driver/IEnvironmentSensor.hpp"
@@ -42,6 +44,11 @@ namespace northstar {
                 RealSenseT265,
             };
 
+            enum class EOpticalCalibrationData {
+                TwoDee,
+                ThreeDee,
+            };
+
             static constexpr EEnvironmentSensor x_eSelectedEnvironmentSensor = EEnvironmentSensor::RealSenseT265; // TODO: read this from config
             static constexpr std::array<northstar::driver::types::EHand, 2> x_aeHands = { northstar::driver::types::EHand::Left, northstar::driver::types::EHand::Right };
             struct SServerConfiguration{
@@ -50,6 +57,7 @@ namespace northstar {
                 bool bUseControllerDebugMode;
                 bool bShouldBlockStandbyMode;
                 bool bEnableControllers;
+                EOpticalCalibrationData eSelectedOpticalCalibration;
             };
 
             void LoadConfiguration();
@@ -67,7 +75,7 @@ namespace northstar {
             std::shared_ptr<northstar::driver::CLeapMotion> m_pLeapMotion;
             std::shared_ptr<northstar::driver::IEnvironmentSensor> m_pEnvironmentSensor;
             std::shared_ptr<northstar::driver::CSensorFrameCoordinator> m_pSensorFrameCoordinator;
-            std::shared_ptr<northstar::driver::COptics> m_pOptics;
+            std::shared_ptr<northstar::driver::IOptics> m_pOptics;
             std::unique_ptr<northstar::driver::CHMD> m_pHMD;
             std::vector<std::unique_ptr<northstar::driver::CController>> m_pControllers;
             std::shared_ptr<northstar::openvr::CVRProperties> m_pVRProperties;

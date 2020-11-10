@@ -20,14 +20,25 @@ vr::EVRInitError northstar::driver::CServer::Init(vr::IVRDriverContext* pDriverC
         m_pMatrixFactory,
         m_pVectorFactory);
 
-    m_pOptics = std::make_shared<northstar::driver::COptics>(
-        vr::VRSettings(),
-        m_pWorldAdapter,
-        m_pSpaceAdapter,
-        m_pGeometry,
-        m_pMatrixFactory,
-        m_pVectorFactory,
-        m_pLogger);
+    if (m_sConfiguration.eSelectedOpticalCalibration == EOpticalCalibrationData::TwoDee) {
+        m_pOptics = std::make_shared<northstar::driver::C2DCalibratedOptics>(
+            vr::VRSettings(),
+            m_pWorldAdapter,
+            m_pSpaceAdapter,
+            m_pGeometry,
+            m_pMatrixFactory,
+            m_pVectorFactory,
+            m_pLogger);
+    } else { // EOpticalCalibrationData::ThreeDee
+        m_pOptics = std::make_shared<northstar::driver::C3DCalibratedOptics>(
+            vr::VRSettings(),
+            m_pWorldAdapter,
+            m_pSpaceAdapter,
+            m_pGeometry,
+            m_pMatrixFactory,
+            m_pVectorFactory,
+            m_pLogger);
+    }
 
     if (x_eSelectedEnvironmentSensor == EEnvironmentSensor::StructureCore) {
         m_pEnvironmentSensor = std::make_shared<northstar::driver::CStructureSensor>(
@@ -88,6 +99,9 @@ void northstar::driver::CServer::LoadConfiguration() {
     m_sConfiguration.bUseControllerDebugMode = pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svUseControllerDebugMode.data());
     m_sConfiguration.bShouldBlockStandbyMode = pVRSettings->GetBool(debug::k_svRoot.data(), debug::k_svShouldBlockStandbyMode.data());
     m_sConfiguration.bEnableControllers = pVRSettings->GetBool(configuration::k_svRoot.data(), configuration::k_svEnableControllers.data());
+    m_sConfiguration.eSelectedOpticalCalibration = pVRSettings->GetBool(configuration::k_svRoot.data(), configuration::k_svUse2DCalibrationData.data())
+        ? EOpticalCalibrationData::TwoDee 
+        : EOpticalCalibrationData::ThreeDee;
 }
 
 void northstar::driver::CServer::Cleanup() {
