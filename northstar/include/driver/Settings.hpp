@@ -107,6 +107,11 @@ namespace northstar {
                     static constexpr std::string_view k_svCameraProjection_31 = "cameraProjection_e31";
                     static constexpr std::string_view k_svCameraProjection_32 = "cameraProjection_e32";
                     static constexpr std::string_view k_svCameraProjection_33 = "cameraProjection_e33";
+
+                    static constexpr std::string_view k_svCameraProjectionX = "cameraProjection_x";
+                    static constexpr std::string_view k_svCameraProjectionY = "cameraProjection_y";
+                    static constexpr std::string_view k_svCameraProjectionZ = "cameraProjection_z";
+                    static constexpr std::string_view k_svCameraProjectionW = "cameraProjection_w";
                 }
 
                 namespace eye3D {

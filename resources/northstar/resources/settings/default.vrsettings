@@ -31,7 +31,7 @@
     "photonLatency": 0.035
   },
   "shared2DCalibrationData": {
-    "baseline": 64.0,
+    "baseline": 64.0
   },
   "leftEye2DCalibrationData": {
     "UVToRectilinearXAxisCoefficient_0": -0.3918020292449689,
@@ -81,7 +81,11 @@
     "cameraProjection_e30": 0,
     "cameraProjection_e31": 0,
     "cameraProjection_e32": -1,
-    "cameraProjection_e33": 0
+    "cameraProjection_e33": 0,
+    "cameraProjection_x": -0.699999988079071,
+    "cameraProjection_y": 0.699999988079071,
+    "cameraProjection_z": 0.30000001192092898,
+    "cameraProjection_w": -1.399999976158142
   },
   "rightEye2DCalibrationData": {
     "UVToRectilinearXAxisCoefficient_0": -0.4737128758923168,
@@ -131,7 +135,11 @@
     "cameraProjection_e30": 0,
     "cameraProjection_e31": 0,
     "cameraProjection_e32": -1,
-    "cameraProjection_e33": 0
+    "cameraProjection_e33": 0,
+    "cameraProjection_x": -0.699999988079071,
+    "cameraProjection_y": 0.699999988079071,
+    "cameraProjection_z": 0.30000001192092898,
+    "cameraProjection_w": -1.399999976158142
   },
   "leftEye3DCalibrationData": {
     "ellipseMinorAxis": 0.24494899809360505,

@@ -34,6 +34,7 @@ namespace northstar {
                 std::array<float, 16> UVToRectilinearXAxisCoefficients = { 0 };
                 std::array<float, 16> UVToRectilinearYAxisCoefficients = { 0 };
                 northstar::math::types::ProjMatrix4d m4dCameraProjection;
+                northstar::math::types::Vector4d v4dCameraProjectionFrustumExtentsLRTB;
             };
 
             typedef std::unordered_map<
@@ -42,6 +43,12 @@ namespace northstar {
                 northstar::math::types::SHasher<northstar::math::types::Vector2d>> UVWarpMap;
 
             SEyeConfiguration LoadConfigFromEye(const vr::EVREye& eEye);
+
+            // TODO: better name for this
+            northstar::math::types::Vector2d PolynomialWarpSolve(const vr::EVREye& eEye, const northstar::math::types::Vector2d& v2dTargetEyeUV) const noexcept;
+
+            // TODO: better name for this and put it in geometry?
+            float EvaluateThirdDegree2DPolynomial(float XPosition, float YPosition, const std::array<float, 16>& Coefficients) const noexcept;
 
             vr::IVRSettings* m_pVRSettings;
             std::shared_ptr<northstar::math::IVectorFactory> m_pVectorFactory;

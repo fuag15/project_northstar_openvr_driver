@@ -1,9 +1,7 @@
 # Immediate Goals
 - New Configuration method
-    - fill out 2D classes solve
-    - add appropriate tests for public 2d support methods
-    - sanity check with fake window
-    - get build over to test
+    - Blind copy is definitely wrong, investigate inconsistencies found further
+- Clean up new configuration method
 
 # General Polish
 - Test clean up (add tests to account for default poses)

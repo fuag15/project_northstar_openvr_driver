@@ -82,13 +82,74 @@ northstar::driver::C2DCalibratedOptics::SEyeConfiguration northstar::driver::C2D
             , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjection_32.data())
             , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjection_33.data()) });
 
+    // NOTE the monado driver keeps all these a 0.6 e.g. {-0.6, 0.6, 0.6, -0.6}
+    sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB =
+        m_pWorldAdapter->FromUnityProjectionExtentsLRTBToOpenVRProjectionExtentsLRTB(
+            m_pVectorFactory->V4DFromXYZWArray(
+                { m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionX.data())
+                , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionY.data())
+                , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionZ.data())
+                , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionW.data()) }));
+
     return sEyeConfiguration;
 }
 
+// TODO: What are these in v2 calibration
 Vector4d northstar::driver::C2DCalibratedOptics::GetEyeProjectionLRTB(const vr::EVREye& eEye) {
-    return Vector4d{ 1.0, 1.0, 1.0, 1.0 };
+    const auto& sEyeConfiguration = m_umEyeConfigs.at(eEye);
+    return sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB;
 }
 
+// TODO: WIP
 Vector2d northstar::driver::C2DCalibratedOptics::EyeUVToScreenUV(const vr::EVREye& eEye, const Vector2d& v2dTargetEyeUV) {
-    return Vector2d{ 0.0, 0.0 };
+    auto& pWarps = m_umUVWarps.at(eEye);
+    auto pWarp = pWarps.find(v2dTargetEyeUV);
+    if (pWarp != pWarps.end()) {
+        return pWarp->second;
+    }
+
+    auto v2dSolvedWarpUV = PolynomialWarpSolve(eEye, v2dTargetEyeUV);
+    pWarps.insert_or_assign(v2dTargetEyeUV, v2dSolvedWarpUV);
+    return v2dSolvedWarpUV;
+}
+
+// TODO: Understand
+// TODO: Credit Noah / Bryan for this
+Vector2d northstar::driver::C2DCalibratedOptics::PolynomialWarpSolve(const vr::EVREye& eEye, const Vector2d& v2dTargetEyeUV) const noexcept {
+    const auto& sEyeConfiguration = m_umEyeConfigs.at(eEye);
+    // TODO: One solution claims this is the ray dir from eye origin
+    // the other uses this as the angle of offsset in radians from the forward direction in the projection
+    const float fRayDirectionAlongUAxis = EvaluateThirdDegree2DPolynomial(v2dTargetEyeUV.x(), v2dTargetEyeUV.y(), sEyeConfiguration.UVToRectilinearXAxisCoefficients);
+    const float fRayDirectionAlongVAxis = EvaluateThirdDegree2DPolynomial(v2dTargetEyeUV.x(), v2dTargetEyeUV.y(), sEyeConfiguration.UVToRectilinearYAxisCoefficients);
+
+    float fViewFrustumLeftAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.x());
+    float fViewFrustumRightAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.y());
+    float fViewFrustumUpAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.z());
+    float fViewFrustumDownAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.w());
+
+    // Treat ray axis along u direction as though it were a linear interpolation from 0 - 1 along the combined left / right frustrum radian extents?
+    // This seems odd unsure what to call this variable, this is how monado driver does things
+    float fFinalU = (fRayDirectionAlongUAxis + fViewFrustumRightAngleExtentInRadians) / (fViewFrustumRightAngleExtentInRadians - fViewFrustumLeftAngleExtentInRadians);
+
+    // Treat ray axis along v direction as though it were a linear interpolation from 0 - 1 along the combined top / bottom frustrum radian extents?
+    // This seems odd unsure what to call this variable, this is how monado driver does things
+    float fFinalV = (fRayDirectionAlongVAxis + fViewFrustumUpAngleExtentInRadians) / (fViewFrustumUpAngleExtentInRadians - fViewFrustumDownAngleExtentInRadians);
+
+    return Vector2d{ fFinalU, fFinalV };
+}
+
+// TODO: better name for this and put it in geometry?
+// TODO: Credit Noah / Bryan for this
+float northstar::driver::C2DCalibratedOptics::EvaluateThirdDegree2DPolynomial(float XPosition, float YPosition, const std::array<float, 16>& Coefficients) const noexcept
+{
+    const float XPositionSquared = XPosition * XPosition;
+    const float XPositionCubed = XPosition * XPosition * XPosition;
+    const float YPositionSquared = YPosition * YPosition;
+    const float YPositionCubed = YPosition * YPosition * YPosition;
+    return (
+        (Coefficients[0] + (Coefficients[1] * YPosition) + (Coefficients[2] * YPositionSquared) + (Coefficients[3] * YPositionCubed)) +
+        ((Coefficients[4] * XPosition) + (Coefficients[5] * XPosition * YPosition) + (Coefficients[6] * XPosition * YPositionSquared) + (Coefficients[7] * XPosition * YPositionCubed)) +
+        ((Coefficients[8] * XPositionSquared) + (Coefficients[9] * XPositionSquared * YPosition) + (Coefficients[10] * XPositionSquared * YPositionSquared) + (Coefficients[11] * XPositionSquared * YPositionCubed)) +
+        ((Coefficients[12] * XPositionCubed) + (Coefficients[13] * XPositionCubed * YPosition) + (Coefficients[14] * XPositionCubed * YPositionSquared) + (Coefficients[15] * XPositionCubed * YPositionCubed))
+    );
 }
