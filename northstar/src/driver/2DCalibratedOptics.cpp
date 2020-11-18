@@ -117,22 +117,22 @@ Vector2d northstar::driver::C2DCalibratedOptics::EyeUVToScreenUV(const vr::EVREy
 // TODO: Credit Noah / Bryan for this
 /*
 # NOTES FROM DIGGING
-1. In steamVR UV origin is the upper left, In the shader toy example UV origin is in the lower right
+* In steamVR UV origin is the upper left, In the shader toy example UV origin is in the lower right
 => u and v must be negated before sampling the polynomial
 
-2. in the shadertoy example, the left side samples the right eye and the right side samples the left eye
+* in the shadertoy example, the left side samples the right eye and the right side samples the left eye
 => left eye should use right eye coeff, and right eye should use left eye coeff
 
-3. in the shadertoy example, when a direction is sampled, y is used to indicate looking left and right, x is used to indicate looking up and down
+* in the shadertoy example, when a direction is sampled, y is used to indicate looking left and right, x is used to indicate looking up and down
 => UDirection and VDirection are swapped
 
-4. the rays are written as though x is up and y is left, but steamvr uvs are opposite
+* the rays are written as though x is up and y is left, but steamvr uvs are opposite
 => the ray directions must be negated
 
-5. it appears the constants in the example shader toy were made for a monitor that was flipped 180 where as the ones i got were made for a monitor that was not flipped
+* it appears the constants in the example shader toy were made for a monitor that was flipped 180 where as the ones i got were made for a monitor that was not flipped
 => ???
 
-6. it seems given testing of the shadertoy values that the rays are bounded to [-1, 1] on each axis
+* it seems given testing of the shadertoy values that the rays are bounded to [-1, 1] on each axis
 => things are shifted from [-1, 1] -> [0, 1]
 */
 // TODO: double check that the frustum extents look right on the headset when end to end testing is possible, ask for answers to these questions
