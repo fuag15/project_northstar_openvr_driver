@@ -82,25 +82,21 @@ northstar::driver::C2DCalibratedOptics::SEyeConfiguration northstar::driver::C2D
             , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjection_32.data())
             , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjection_33.data()) });
 
-    // NOTE the monado driver keeps all these a 0.6 e.g. {-0.6, 0.6, 0.6, -0.6}
     sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB =
-        m_pWorldAdapter->FromUnityProjectionExtentsLRTBToOpenVRProjectionExtentsLRTB(
-            m_pVectorFactory->V4DFromXYZWArray(
-                { m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionX.data())
-                , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionY.data())
-                , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionZ.data())
-                , m_pVRSettings->GetFloat(sEyeKey.data(), eye2D::k_svCameraProjectionW.data()) }));
+		m_pVectorFactory->V4DFromXYZWArray(
+			{ m_pVRSettings->GetFloat(sEyeKey.data(), eye3D::k_svCameraProjectionX.data())
+			, m_pVRSettings->GetFloat(sEyeKey.data(), eye3D::k_svCameraProjectionY.data())
+			, m_pVRSettings->GetFloat(sEyeKey.data(), eye3D::k_svCameraProjectionZ.data())
+			, m_pVRSettings->GetFloat(sEyeKey.data(), eye3D::k_svCameraProjectionW.data()) });
 
     return sEyeConfiguration;
 }
 
-// TODO: What are these in v2 calibration
 Vector4d northstar::driver::C2DCalibratedOptics::GetEyeProjectionLRTB(const vr::EVREye& eEye) {
     const auto& sEyeConfiguration = m_umEyeConfigs.at(eEye);
     return sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB;
 }
 
-// TODO: WIP
 Vector2d northstar::driver::C2DCalibratedOptics::EyeUVToScreenUV(const vr::EVREye& eEye, const Vector2d& v2dTargetEyeUV) {
     auto& pWarps = m_umUVWarps.at(eEye);
     auto pWarp = pWarps.find(v2dTargetEyeUV);
@@ -113,54 +109,16 @@ Vector2d northstar::driver::C2DCalibratedOptics::EyeUVToScreenUV(const vr::EVREy
     return v2dSolvedWarpUV;
 }
 
-// TODO: Understand
-// TODO: Credit Noah / Bryan for this
-/*
-# NOTES FROM DIGGING
-* In steamVR UV origin is the upper left, In the shader toy example UV origin is in the lower right
-=> u and v must be negated before sampling the polynomial
-
-* in the shadertoy example, the left side samples the right eye and the right side samples the left eye
-=> left eye should use right eye coeff, and right eye should use left eye coeff
-
-* in the shadertoy example, when a direction is sampled, y is used to indicate looking left and right, x is used to indicate looking up and down
-=> UDirection and VDirection are swapped
-
-* the rays are written as though x is up and y is left, but steamvr uvs are opposite
-=> the ray directions must be negated
-
-* it appears the constants in the example shader toy were made for a monitor that was flipped 180 where as the ones i got were made for a monitor that was not flipped
-=> ???
-
-* it seems given testing of the shadertoy values that the rays are bounded to [-1, 1] on each axis
-=> things are shifted from [-1, 1] -> [0, 1]
-*/
-// TODO: double check that the frustum extents look right on the headset when end to end testing is possible, ask for answers to these questions
+// TODO: Credit Noah / Bryan for this / doc after sanity checked with one other
 Vector2d northstar::driver::C2DCalibratedOptics::PolynomialWarpSolve(const vr::EVREye& eEye, const Vector2d& v2dTargetEyeUV) const noexcept {
-    const auto& sEyeConfiguration = eEye == vr::EVREye::Eye_Left ? m_umEyeConfigs.at(vr::EVREye::Eye_Right) : m_umEyeConfigs.at(vr::EVREye::Eye_Left);
-    //const auto& sEyeConfiguration = m_umEyeConfigs.at(eEye);
-    // TODO: One solution claims this is the ray dir from eye origin
-    // the other uses this as the angle of offsset in radians from the forward direction in the projection
-    //return Vector2d{ v2dTargetEyeUV.x() + 0.5, v2dTargetEyeUV.y() + 0.5 };
-    const float fRayDirectionAlongUAxis = -EvaluateThirdDegree2DPolynomial(1.0 - v2dTargetEyeUV.x(), 1.0 - v2dTargetEyeUV.y(), sEyeConfiguration.UVToRectilinearXAxisCoefficients);
-    const float fRayDirectionAlongVAxis = -EvaluateThirdDegree2DPolynomial(1.0 - v2dTargetEyeUV.x(), 1.0 - v2dTargetEyeUV.y(), sEyeConfiguration.UVToRectilinearYAxisCoefficients);
+    const auto& sEyeConfiguration = m_umEyeConfigs.at(eEye);
 
-    //float fViewFrustumLeftAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.x());
-    //float fViewFrustumRightAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.y());
-    //float fViewFrustumUpAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.z());
-    //float fViewFrustumDownAngleExtentInRadians = tan(sEyeConfiguration.v4dCameraProjectionFrustumExtentsLRTB.w());
+    // the 2d configuration program uses x as y and y as x
+    const float fRayDirectionAlongUAxis = EvaluateThirdDegree2DPolynomial(v2dTargetEyeUV.x(), 1.0 - v2dTargetEyeUV.y(), sEyeConfiguration.UVToRectilinearYAxisCoefficients);
+    const float fRayDirectionAlongVAxis = EvaluateThirdDegree2DPolynomial(v2dTargetEyeUV.x(), 1.0 - v2dTargetEyeUV.y(), sEyeConfiguration.UVToRectilinearXAxisCoefficients);
 
-    // Treat ray axis along u direction as though it were a linear interpolation from 0 - 1 along the combined left / right frustrum radian extents?
-    // This seems odd unsure what to call this variable, this is how monado driver does things
-    //float fFinalU = (fRayDirectionAlongUAxis + fViewFrustumRightAngleExtentInRadians) / (fViewFrustumRightAngleExtentInRadians - fViewFrustumLeftAngleExtentInRadians);
-
-    // Treat ray axis along v direction as though it were a linear interpolation from 0 - 1 along the combined top / bottom frustrum radian extents?
-    // This seems odd unsure what to call this variable, this is how monado driver does things
-    //float fFinalV = (fRayDirectionAlongVAxis + fViewFrustumUpAngleExtentInRadians) / (fViewFrustumUpAngleExtentInRadians - fViewFrustumDownAngleExtentInRadians);
-    //return Vector2d{ fFinalV, fFinalU };
-
-    // shift from [-1, 1] 
-    return Vector2d{ ((fRayDirectionAlongVAxis / 2.0) + 0.5), ((fRayDirectionAlongUAxis / 2.0) + 0.5) };
+    // shift from [-1, 1]  to 0 -> 1
+    return Vector2d{ ((fRayDirectionAlongUAxis / 2.0) + 0.5), ((fRayDirectionAlongVAxis / 2.0) + 0.5) };
 }
 
 // TODO: better name for this and put it in geometry?
