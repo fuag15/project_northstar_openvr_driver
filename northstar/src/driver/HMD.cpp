@@ -38,29 +38,22 @@ void northstar::driver::CHMD::LoadConfiguration() {
     m_sConfiguration.dIPD = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svIPD.data());
     m_sConfiguration.sDisplayConfiguration.dFrequency = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svFrequency.data());
     m_sConfiguration.sDisplayConfiguration.dPhotonLatency = m_pVRSettings->GetFloat(display::k_svRoot.data(), display::k_svPhotonLatency.data());
-    if (m_sConfiguration.bUseFakeScreenConfig) {
-        //TODO: Put these in constants
-        m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin << 0, 0;
-        m_sConfiguration.sDisplayConfiguration.v2iWindowDimensions << 1600, 800;
-        m_sConfiguration.sDisplayConfiguration.v2iEyeRenderAreaDimensions << 800, 800;
-    } else {
-        m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin <<
-            m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svOriginX.data()),
-            m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svOriginY.data());
+    m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin <<
+        m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svOriginX.data()),
+        m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svOriginY.data());
 
-        m_sConfiguration.sDisplayConfiguration.v2iWindowDimensions <<
-            m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svWidth.data()),
-            m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svHeight.data());
+    m_sConfiguration.sDisplayConfiguration.v2iWindowDimensions <<
+        m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svWidth.data()),
+        m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svHeight.data());
 
-        m_sConfiguration.sDisplayConfiguration.v2iEyeRenderAreaDimensions <<
-            m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svRenderWidth.data()),
-            m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svRenderHeight.data());
+    m_sConfiguration.sDisplayConfiguration.v2iEyeRenderAreaDimensions <<
+        m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svRenderWidth.data()),
+        m_pVRSettings->GetInt32(display::k_svRoot.data(), display::k_svRenderHeight.data());
 
-        if (m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin.x() < 0) {
-            m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin.x() = 0;
-            m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin.x() = m_pHostProber->ProbeDisplayOriginX()
-                .value_or(x_iFallbackWindowOriginX);
-        }
+    if (m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin.x() < 0) {
+        m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin.x() = 0;
+        m_sConfiguration.sDisplayConfiguration.v2iWindowOrigin.x() = m_pHostProber->ProbeDisplayOriginX()
+            .value_or(x_iFallbackWindowOriginX);
     }
 
     SetOpenVRConfiguration();
@@ -79,10 +72,10 @@ vr::EVRInitError northstar::driver::CHMD::Activate(vr::TrackedDeviceIndex_t unOb
 
 void northstar::driver::CHMD::SetOpenVRProperties() {
     if (m_sConfiguration.bUseFakeScreenConfig) {
-        m_pVRProperties->SetBoolProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_IsOnDesktop_Bool, false);
         m_pVRProperties->SetBoolProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_DisplayDebugMode_Bool, true);
     }
 
+    m_pVRProperties->SetBoolProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_IsOnDesktop_Bool, false);
     m_pVRProperties->SetStringProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_SerialNumber_String, x_svSerialNumber.data() );
     m_pVRProperties->SetStringProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_ModelNumber_String, x_svModelNumber.data() );
     m_pVRProperties->SetStringProperty(m_sOpenVRState.ulPropertyContainer, vr::Prop_RenderModelName_String, x_svModelNumber.data() );
@@ -124,7 +117,7 @@ bool northstar::driver::CHMD::IsDisplayRealDisplay() {
     if (m_sConfiguration.bUseFakeScreenConfig)
         return false;
 
-    return x_bIsDisplayRealDisplay; 
+    return true; 
 }
 
 

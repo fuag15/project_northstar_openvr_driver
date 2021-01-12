@@ -50,7 +50,6 @@ namespace northstar {
             static constexpr float x_fUserHeadToEyeDepthInMeters = 0.0f; // TODO: validate this
             static constexpr bool x_bDirectModeEnabled = false;
             static constexpr bool x_bIsDisplayOnDesktop = true;
-            static constexpr bool x_bIsDisplayRealDisplay = true;
             static constexpr std::string_view x_svSerialNumber = "1024";
             static constexpr std::string_view x_svModelNumber = "0";
 
